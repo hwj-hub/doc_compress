@@ -1,0 +1,3564 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0369a1">
+<title>문서 파일 용량 줄이기 · 한글 hwp·PPT·엑셀·워드 속 사진 한 번에 압축, 업로드 없이</title>
+<meta name="description" content="한글(hwp·hwpx)·파워포인트(pptx)·엑셀(xlsx)·워드(docx) 파일의 용량을 브라우저 안에서 줄입니다. 문서 속 사진이 실제로 보이는 크기를 재서 그 크기에 필요한 만큼만 남기고, 글·표·서식은 한 글자도 건드리지 않습니다. 휴대폰 사진을 넣은 보고서는 보통 80~95% 줄어들고, 10MB·20MB 같은 첨부 제한에 맞춰 목표 용량만 적어도 됩니다. 파일을 서버로 올리지 않아 공문·계약서·내부 자료도 안전합니다. 설치·회원가입 없이 무료.">
+<meta property="og:title" content="문서 파일 용량 줄이기 · 한글·PPT·엑셀·워드 사진만 골라 압축">
+<meta property="og:description" content="업로드 없이 브라우저 안에서만 처리합니다. 문서 속 사진을 보이는 크기에 맞춰 줄이고, 글·표·서식은 그대로 둡니다. 10MB 첨부 제한도 목표 용량으로 맞춥니다.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://hwj-hub.github.io/doc_compress/">
+<meta property="og:image" content="https://hwj-hub.github.io/doc_compress/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="문서 파일 용량 줄이기 — 한글·PPT·엑셀·워드 속 사진만 보이는 크기에 맞춰 줄이는 무료 도구">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%F0%9F%93%91%3C/text%3E%3C/svg%3E">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  color-scheme:light dark;
+  --bg:#f1f6fa; --card:#fff; --card2:#f4f8fb; --fg:#0e1c26; --muted:#557083; --line:#dbe7ef;
+  --accent:#0369a1; --accent2:#0ea5e9; --afg:#fff;
+  --ok:#059669; --okbg:#e8f7f1; --warn:#b45309; --warnbg:#fef4e6; --danger:#dc2626; --dangerbg:#fdecec;
+  --photo:#0ea5e9; --rest:#94a3b8;
+  --shadow:0 1px 2px rgba(14,28,38,.05),0 8px 24px -14px rgba(14,28,38,.30);
+  --r:16px;
+}
+@media (prefers-color-scheme:dark){
+ :root{
+  --bg:#07131c; --card:#10212d; --card2:#0c1a24; --fg:#e4f1f8; --muted:#8fb0c3; --line:#1d3646;
+  --accent:#38bdf8; --accent2:#7dd3fc; --afg:#03202f;
+  --ok:#34d399; --okbg:#0c2b23; --warn:#fbbf24; --warnbg:#2a2110; --danger:#f87171; --dangerbg:#2c1414;
+  --photo:#38bdf8; --rest:#5b7384;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -16px rgba(0,0,0,.8);
+ }
+}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);line-height:1.55;word-break:keep-all;overflow-wrap:anywhere;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic","Apple SD Gothic Neo",Roboto,sans-serif;
+  -webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:1180px;margin:0 auto;padding:0 14px calc(70px + env(safe-area-inset-bottom))}
+.hide{display:none !important}
+.nw{white-space:nowrap}
+
+/* ══ 광고 슬롯 ══ 자리만 비워 두고 화면 폭에 맞는 크기를 AD 가 채운다.
+   크기를 미리 잡아 두어 광고가 늦게 떠도 화면이 밀리지 않는다(애드핏: 광고 공간은 고정되어야 함) */
+.ad-slot{display:flex;align-items:center;justify-content:center;margin:10px auto;max-width:100%}
+.ad-top{width:320px;height:50px;max-width:100%}
+.ad-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;border:1px dashed var(--line);
+  border-radius:8px;background:var(--card2);color:var(--muted);font-size:11px;letter-spacing:.08em;font-weight:600}
+/* ── 인앱 브라우저 안내 띠 ── 앱 안 WebView 는 파일을 내려받지 못한다 */
+.iabar{display:none;align-items:center;gap:10px;margin:10px 0 0;padding:11px 12px;border-radius:12px;
+  background:var(--warnbg);border:1px solid color-mix(in srgb,var(--warn) 34%,transparent);line-height:1.5}
+body.inapp .iabar{display:flex}
+.iabar .ia-t{flex:1 1 auto;min-width:0;font-size:12.5px;font-weight:700;color:var(--fg)}
+.iabar .ia-t small{display:block;font-size:11.5px;font-weight:600;color:var(--muted);margin-top:2px}
+.iabar .ia-go{flex:0 0 auto;font:inherit;font-size:12.5px;font-weight:800;color:#fff;border:0;border-radius:999px;
+  padding:9px 14px;min-height:38px;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+@media (prefers-color-scheme:dark){.iabar .ia-go{color:var(--afg)}}
+.iabar .ia-x{flex:0 0 auto;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;
+  color:var(--muted);font:inherit;font-size:12px;line-height:1;cursor:pointer}
+/* ── 앱 안에서 열었을 때 막는 창 ── 토스트(z-index 99)보다는 아래에 둔다 */
+.iamodal{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;padding:18px;
+  background:rgba(3,14,22,.72);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+body.ia-lock{overflow:hidden}
+body.ia-lock .iamodal{display:flex}
+body.ia-lock .wrap{pointer-events:none}
+.iasheet{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);
+  width:100%;max-width:420px;max-height:92vh;overflow:auto;padding:22px 18px 16px;text-align:center}
+.iasheet .iaic{font-size:34px;line-height:1;margin-bottom:10px}
+.iasheet h2{font-size:17.5px;font-weight:800;letter-spacing:-.02em;margin:0 0 10px;line-height:1.45;text-wrap:balance}
+.iap{font-size:13.5px;font-weight:600;color:var(--muted);line-height:1.7;margin:0 0 14px}
+.iap b{color:var(--fg);font-weight:800}
+.iasteps{text-align:left;margin:0 0 16px;padding:12px 14px 12px 32px;border-radius:12px;background:var(--card2);
+  font-size:13px;font-weight:600;color:var(--muted);line-height:1.7}
+.iasteps li+li{margin-top:5px}
+.iasteps b{color:var(--fg);font-weight:800}
+.iabtn{display:block;width:100%;font:inherit;font-size:15px;font-weight:800;color:#fff;border:0;border-radius:12px;
+  padding:14px;min-height:52px;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:var(--shadow)}
+@media (prefers-color-scheme:dark){.iabtn{color:var(--afg)}}
+.iafine{margin:12px 0 0;font-size:12px;font-weight:600;color:var(--muted);line-height:1.6}
+.iafine button{font:inherit;font-size:12px;font-weight:700;color:var(--muted);background:none;border:0;padding:6px 8px;
+  text-decoration:underline;cursor:pointer;min-height:36px}
+.dwarn{margin:10px 0 0;padding:10px 12px;border-radius:10px;background:var(--warnbg);font-size:12.5px;font-weight:700;line-height:1.6}
+.dwarn button{font:inherit;font-size:12.5px;font-weight:800;color:var(--accent);background:none;border:0;padding:8px 4px;margin:-8px 0;
+  text-decoration:underline;cursor:pointer}
+.ad-lab{display:block;text-align:center;font-size:9.5px;font-weight:700;letter-spacing:.14em;color:var(--muted);opacity:.7;margin:12px 0 -4px}
+body.no-ad .ad-slot,.ad-none{display:none !important}
+/* PC 옆 칸 — 결과 카드 바로 위 320×50 (좁은 화면에서는 숨긴다) */
+@media (max-width:979px){#ad-side{display:none}}
+@media (min-width:980px){#ad-side{margin:14px auto 0}}
+/* 본문 광고는 버튼·입력칸에서 넉넉히 떼어 놓는다 — 실수로 눌리는 자리는 금지 */
+#ad-mid{margin:18px auto}
+
+/* ── 하단 오버형 ── 콘텐츠를 가리지 않도록 본문 아래 여백을 같이 늘린다(애드핏: 콘텐츠를 덮는 배치 금지).
+   입력 중(넣기·설정·결과 카드가 화면에 있을 때)에는 띄우지 않는다 — 핵심 행동 중 광고 노출 금지 조항 */
+#anchor{position:fixed;left:0;right:0;bottom:0;z-index:45;display:flex;align-items:center;justify-content:center;
+  background:var(--card);border-top:1px solid var(--line);box-shadow:0 -8px 22px -14px rgba(0,0,0,.55);
+  padding:8px 4px calc(8px + env(safe-area-inset-bottom));transform:translateY(120%);
+  /* 바 위쪽에 붙은 「광고」 라벨·닫기는 translateY 로 내려도 화면에 걸쳐 남는다 — 통째로 감춘다.
+     내려갈 때는 미끄러진 뒤(.22s) 감추고, 올라올 때는 바로 보이게 한다 */
+  visibility:hidden;pointer-events:none;transition:transform .22s,visibility 0s linear .22s}
+#anchor.on{transform:none;visibility:visible;pointer-events:auto;transition:transform .22s,visibility 0s}
+#anchor .ad-slot{margin:0}
+#anchor .amk{position:absolute;left:10px;top:-11px;font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--muted);
+  background:var(--card);border:1px solid var(--line);border-radius:5px;padding:0 5px;line-height:15px}
+/* 닫기는 광고 영역 밖에 둔다 — 광고 안에 닫기 버튼을 넣는 것은 금지(오클릭 방지) */
+#anchor .axl{position:absolute;right:6px;top:-38px;width:36px;height:36px;border-radius:50%;cursor:pointer;
+  border:1px solid var(--line);background:var(--card);color:var(--muted);font-size:13px;line-height:1;box-shadow:var(--shadow)}
+#anchor .axl::before{content:'';position:absolute;inset:-6px}
+body.anch .wrap{padding-bottom:calc(124px + env(safe-area-inset-bottom))}
+body.anch #toast{bottom:calc(118px + env(safe-area-inset-bottom))}
+@media (min-width:980px){#anchor{display:none}}
+
+/* ── 저장 완료 카드 ── 화면을 덮지 않고 본문 흐름 안에 펼친다 */
+#doneCard{border-color:color-mix(in srgb,var(--ok) 40%,var(--line))}
+#doneCard .ad-lab{margin-top:16px}
+.dmsg{margin:0 0 10px;font-size:14px;font-weight:700;line-height:1.6}
+.dsteps{margin:0;padding:0 0 0 20px;font-size:13px;font-weight:600;line-height:1.75;color:var(--muted)}
+.dsteps b{color:var(--fg);font-weight:800}
+
+header{text-align:center;padding:14px 0 2px}
+.logo{display:inline-flex;align-items:center;gap:9px;font-size:22px;font-weight:800;letter-spacing:-.02em}
+.logo .ico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:17px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:var(--shadow)}
+.tag{font-size:14.5px;font-weight:600;color:var(--muted);margin:8px 0 0;text-wrap:balance}
+.tag b{color:var(--fg)}
+.badges{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
+.badge{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--okbg);color:var(--ok);border:1px solid transparent}
+.badge.gray{background:var(--card2);color:var(--muted);border-color:var(--line)}
+
+/* ── 두 칸 배치 · 넓은 화면에서 결과를 옆에 붙인다 ── */
+.layout{display:grid;grid-template-columns:minmax(0,1fr);gap:0 16px}
+@media (min-width:980px){
+  .layout{grid-template-columns:minmax(0,1fr) 430px;align-items:start}
+  /* 옆 칸이 화면보다 길면 스스로 굴러간다 — 저장 완료 카드가 화면 밖에 남지 않게 */
+  .side{position:sticky;top:8px;max-height:100vh;overflow:auto;overscroll-behavior:contain;padding-bottom:8px}
+}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-top:14px}
+.card h2{font-size:12px;font-weight:800;color:var(--muted);margin:0 0 12px;letter-spacing:.07em;
+  display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card h2 .n{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:6px;margin-right:6px;
+  background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);letter-spacing:0;font-size:11.5px}
+.card h2 .cnt{color:var(--accent);letter-spacing:0}
+.pvinfo{font-size:11.5px;font-weight:700;color:var(--accent);letter-spacing:0;text-align:right;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── 1. 파일 넣기 ── */
+#drop{border:2px dashed var(--line);border-radius:14px;background:var(--card2);padding:26px 16px;text-align:center;
+  cursor:pointer;transition:.18s}
+#drop:hover,#drop.over,#drop:focus-visible{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 6%,var(--card2));outline:none}
+#drop.over{box-shadow:0 0 0 4px rgba(3,105,161,.16)}
+#drop .big{font-size:38px;line-height:1}
+#drop .t1{font-weight:800;font-size:16.5px;margin-top:8px}
+#drop .t2{color:var(--muted);font-size:12.5px;margin-top:4px}
+.kinds{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:10px}
+.kinds span{font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:7px;background:var(--card);border:1px solid var(--line);color:var(--muted)}
+#file{display:none}
+
+/* ── 2. 설정 ── */
+.row{margin-top:15px}
+.row:first-child{margin-top:0}
+.lab{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:13.5px;font-weight:800;margin-bottom:8px}
+.lab .hint{font-weight:500;color:var(--muted);font-size:12px;text-align:right}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1 1 84px;border:1px solid var(--line);background:var(--card2);color:var(--fg);font:inherit;font-size:13px;
+  font-weight:700;padding:9px 6px;border-radius:11px;cursor:pointer;min-height:48px;transition:.15s;line-height:1.3}
+.seg button i{display:block;font-style:normal;font-size:11px;font-weight:600;color:var(--muted);margin-top:2px}
+.seg button:hover{border-color:var(--accent)}
+.seg button.on{border-color:transparent;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:var(--shadow)}
+.seg button.on i{color:rgba(255,255,255,.85)}
+@media (prefers-color-scheme:dark){.seg button.on{color:var(--afg)}.seg button.on i{color:rgba(3,32,47,.72)}}
+.seghelp{font-size:12px;font-weight:600;color:var(--muted);line-height:1.65;margin:9px 0 0}
+.seghelp b{color:var(--fg)}
+
+.tgtline{display:flex;gap:8px;align-items:center}
+.tgtline input{font:inherit;font-size:17px;font-weight:800;color:var(--fg);background:var(--card2);border:1px solid var(--line);
+  border-radius:10px;padding:10px 12px;min-height:46px;width:120px;text-align:right;font-variant-numeric:tabular-nums}
+.tgtline input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+.tgtline .unit{font-size:14px;font-weight:800;color:var(--muted)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.chip{border:1px solid var(--line);background:var(--card2);color:var(--muted);font:inherit;font-size:12.5px;font-weight:700;
+  padding:8px 12px;border-radius:999px;cursor:pointer;min-height:44px}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.on{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+
+.chk{display:flex;gap:9px;align-items:flex-start;padding:9px 0;cursor:pointer;font-size:13.5px;font-weight:700}
+.chk input{flex:0 0 auto;width:20px;height:20px;margin:1px 0 0;accent-color:var(--accent)}
+.chk i{display:block;font-style:normal;font-size:12px;font-weight:600;color:var(--muted);margin-top:2px;line-height:1.6}
+
+#prog{display:none;margin-top:14px}
+#prog.show{display:block}
+.bar{height:8px;background:var(--card2);border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .18s}
+.ptxt{font-size:12.5px;color:var(--muted);margin-top:7px;text-align:center;font-weight:600}
+
+/* ── 3. 결과 목록 ── */
+.tools{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.mini{border:1px solid var(--line);background:var(--card);color:var(--fg);font:inherit;font-size:13px;font-weight:700;
+  padding:9px 14px;border-radius:999px;cursor:pointer;min-height:42px;transition:.15s}
+.mini:hover{border-color:var(--accent)}
+.mini.danger:hover{border-color:var(--danger);color:var(--danger)}
+
+#list{list-style:none;margin:0;padding:0}
+.item{display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.item:last-child{border-bottom:0}
+.item.sel{background:color-mix(in srgb,var(--accent) 7%,transparent);border-radius:10px;padding-left:8px;padding-right:8px}
+.item.bad .fname{color:var(--danger)}
+.kdg{flex:0 0 40px;height:32px;margin-top:1px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;color:#fff;letter-spacing:.02em}
+.kdg.hwp,.kdg.hwpx{background:#1d6fd1}.kdg.pptx{background:#c2410c}.kdg.xlsx{background:#107c41}.kdg.docx{background:#2b579a}.kdg.ooxml,.kdg.err{background:#64748b}
+.meta{flex:1;min-width:0}
+.fname{font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fsz{font-size:12px;color:var(--muted);margin-top:3px;display:flex;flex-wrap:wrap;gap:2px 7px;align-items:center;
+  font-variant-numeric:tabular-nums}
+.fsz b{color:var(--fg);font-weight:800}
+.cut{font-weight:800;color:var(--ok);background:var(--okbg);border-radius:999px;padding:1px 8px;font-size:11.5px}
+.cut.up{color:var(--warn);background:var(--warnbg)}
+.sub{width:100%;font-size:11.5px;color:var(--muted);margin-top:2px}
+.err{color:var(--danger);font-weight:700}
+.ctl{display:flex;gap:5px;flex:0 0 auto;align-items:center}
+.sq{border:1px solid var(--line);background:var(--card2);color:var(--muted);font:inherit;font-size:15px;font-weight:800;
+  width:40px;height:42px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0}
+.sq:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.sq.x:hover{border-color:var(--danger);color:var(--danger)}
+.sq.go{border-color:transparent;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.sq.go:disabled{opacity:.35;cursor:default}
+@media (prefers-color-scheme:dark){.sq.go{color:var(--afg)}}
+
+.tot{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+.tot div{flex:1 1 30%;min-width:0;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:11px 12px}
+.tot b{display:block;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.03em}
+.tot span{display:block;font-size:18px;font-weight:800;margin-top:2px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tot span.big{color:var(--accent)}
+
+.note{border-radius:11px;padding:10px 12px;font-size:12.5px;font-weight:600;line-height:1.65;margin-top:11px}
+.note b{font-weight:800}
+.note.info{background:var(--card2);color:var(--muted);border:1px solid var(--line)}
+.note.warn{background:var(--warnbg);color:var(--warn)}
+.note.warn a{color:inherit;font-weight:800}
+.note.bad{background:var(--dangerbg);color:var(--danger)}
+.fine{font-size:12px;font-weight:600;color:var(--muted);line-height:1.65;margin:9px 0 0}
+.fine b{color:var(--fg)}
+
+/* ── 결과 확인 · 저장 ── */
+.btn{flex:1 1 130px;border:1px solid var(--line);background:var(--card2);color:var(--fg);font:inherit;font-size:14px;font-weight:800;
+  padding:11px 12px;border-radius:12px;cursor:pointer;min-height:48px;transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-align:center}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.pri{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;box-shadow:var(--shadow)}
+.btn.pri:hover:not(:disabled){filter:brightness(1.06)}
+@media (prefers-color-scheme:dark){.btn.pri{color:var(--afg)}}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.actions .btn.pri{flex:2 1 200px}
+.pvtitle{font-size:13px;font-weight:700;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pvstate{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:0;white-space:nowrap}
+.pvstate.busy{color:var(--accent)}
+.pvempty{margin-top:12px;border:1px dashed var(--line);border-radius:12px;background:var(--card2);padding:30px 16px;text-align:center;
+  font-size:13px;font-weight:700;color:var(--muted);line-height:1.7}
+.pvempty .big{display:block;font-size:30px;line-height:1;margin-bottom:8px}
+
+/* 용량 구성 막대 — 사진 vs 나머지, 줄이기 전·후 */
+.comp{margin-top:12px;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:11px 12px}
+.crow{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:8px;align-items:center;font-size:11.5px;font-weight:700;color:var(--muted)}
+.crow+.crow{margin-top:7px}
+.crow .trk{height:14px;border-radius:5px;background:transparent;display:flex;overflow:hidden}
+.crow .trk i{display:block;height:100%}
+.crow .trk i.ph{background:var(--photo)}
+.crow .trk i.rs{background:var(--rest)}
+.crow .v{font-variant-numeric:tabular-nums;color:var(--fg);font-weight:800;white-space:nowrap}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;font-size:11px;font-weight:700;color:var(--muted)}
+.legend span::before{content:'';display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;background:var(--photo)}
+.legend span.r::before{background:var(--rest)}
+
+/* 사진 목록 */
+.plh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:14px 0 4px;font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.04em}
+#pvList{list-style:none;margin:0;padding:0}
+.pic{display:flex;gap:10px;align-items:center;padding:8px 6px;border-bottom:1px solid var(--line);cursor:pointer;border-radius:8px}
+.pic:last-child{border-bottom:0}
+.pic:hover{background:color-mix(in srgb,var(--accent) 5%,transparent)}
+.pic.open{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.pic .th{flex:0 0 56px;height:44px;border-radius:7px;background:var(--card2) center/contain no-repeat;border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--muted);overflow:hidden}
+.pic .th img{width:100%;height:100%;object-fit:contain;display:block}
+.pic .pm{flex:1;min-width:0}
+.pic .p1{font-size:12.5px;font-weight:800;display:flex;gap:6px;align-items:baseline;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.pic .p1 .nm{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;color:var(--muted);font-size:11.5px}
+.pic .p2{font-size:11.5px;font-weight:600;color:var(--muted);margin-top:1px;font-variant-numeric:tabular-nums}
+.pic .tagk{font-size:10.5px;font-weight:800;padding:1px 7px;border-radius:999px;background:var(--okbg);color:var(--ok);white-space:nowrap}
+.pic .tagk.keep{background:var(--card2);color:var(--muted);border:1px solid var(--line)}
+.cmpbox{padding:10px 6px 12px;border-bottom:1px solid var(--line)}
+.cmpbox .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cmpbox figure{margin:0}
+.cmpbox canvas{width:100%;height:auto;display:block;border-radius:8px;border:1px solid var(--line);background:var(--card2);image-rendering:auto}
+.cmpbox figcaption{font-size:11px;font-weight:800;color:var(--muted);margin-top:4px;text-align:center}
+.cmpbox p{font-size:11.5px;font-weight:600;color:var(--muted);margin:8px 0 0;line-height:1.6}
+.more{display:block;width:100%;margin-top:8px}
+
+.use{list-style:none;margin:0;padding:0}
+.use li{position:relative;padding-left:26px;margin-bottom:13px;font-size:13.5px;font-weight:600;line-height:1.65}
+.use li:last-child{margin-bottom:0}
+.use li::before{content:"▸";position:absolute;left:4px;top:0;color:var(--accent);font-weight:800}
+.use li b{font-weight:800}
+.use li .d{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-top:3px;line-height:1.7}
+.use li code{background:var(--card2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:var(--accent)}
+@media (min-width:980px){.use{columns:2;column-gap:28px}.use li{break-inside:avoid}}
+
+table.ex{width:100%;border-collapse:collapse;font-size:12.5px;min-width:460px}
+table.ex th,table.ex td{border-bottom:1px solid var(--line);padding:8px 8px;text-align:left;vertical-align:top;line-height:1.55}
+table.ex th{font-size:11.5px;color:var(--muted);font-weight:800;background:var(--card2)}
+table.ex td b{font-weight:800}
+.tblwrap{overflow-x:auto;margin:4px 0 0}
+
+details{border-top:1px solid var(--line);padding:12px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:700;font-size:14px;list-style:none;padding:10px 0;margin:-10px 0}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"＋ ";color:var(--accent);font-weight:800}
+details[open] summary::before{content:"－ "}
+details p{margin:8px 0 0;font-size:13.5px;color:var(--muted);line-height:1.8}
+details p b{color:var(--fg)}
+details p a{color:var(--accent);font-weight:700}
+
+footer{text-align:center;color:var(--muted);font-size:12px;margin-top:22px;line-height:1.8}
+footer b{color:var(--fg)}
+footer a{color:var(--accent);font-weight:700}
+
+/* ── 모바일 하단 바 ── 넣기·설정·목록을 보는 동안 결과 카드가 화면 아래에 있으면 띄운다 */
+#mbar{position:fixed;left:0;right:0;bottom:0;z-index:50;transform:translateY(115%);transition:transform .22s;
+  background:var(--card);border-top:1px solid var(--line);box-shadow:0 -8px 22px -14px rgba(0,0,0,.55);
+  padding:9px 14px calc(9px + env(safe-area-inset-bottom))}
+#mbar.on{transform:none}
+#mbar .in{max-width:700px;margin:0 auto;display:flex;align-items:center;gap:10px}
+#mbar .k{flex:1 1 auto;min-width:0;font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.03em}
+#mbar .k b{display:block;font-size:13.5px;font-weight:800;color:var(--fg);letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#mbar .go{flex:0 0 auto;font:inherit;font-size:13px;font-weight:800;color:#fff;padding:10px 15px;border-radius:999px;border:0;cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));min-height:42px}
+@media (prefers-color-scheme:dark){#mbar .go{color:var(--afg)}}
+@media (min-width:980px){#mbar{display:none}}
+
+#toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#0e1c26;color:#fff;font-size:13.5px;font-weight:700;line-height:1.5;
+  padding:10px 16px;border-radius:14px;width:max-content;opacity:0;pointer-events:none;transition:.25s;z-index:99;max-width:92vw;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+@media (prefers-color-scheme:dark){#toast{background:#e4f1f8;color:#03202f}}
+
+@media (max-width:430px){
+  .card{padding:14px}
+  .lab{flex-direction:column;align-items:stretch;gap:2px}
+  .lab .hint{text-align:left}
+  .tot div{flex:1 1 0;padding:9px 8px}
+  .tot span{font-size:15px}
+  .kdg{flex:0 0 36px;height:30px;font-size:10.5px}
+  .seg button{flex:1 1 calc(50% - 6px);font-size:12.5px}
+  .tag{font-size:14px}
+  .pic .th{flex:0 0 48px;height:40px}
+}
+
+/* ══ 주의 문구 ══════════════════════════════════════════
+   사진 화질을 실제로 낮추는 도구이므로, 무엇이 바뀌고
+   무엇을 책임지지 않는지 페이지 안에서 분명히 밝힌다.
+   ══════════════════════════════════════════════════════ */
+.nbx{border:1px solid var(--warn);border-radius:14px;background:var(--warnbg);padding:14px 15px;margin-top:14px}
+.nbx-h{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:800;color:var(--warn);margin:0 0 10px}
+.nbx-h .ic{flex:0 0 auto;width:19px;height:19px;border-radius:6px;background:var(--warn);color:var(--warnbg);
+  font-size:12px;font-weight:800;display:grid;place-items:center;line-height:1}
+.nbx ul{list-style:none;margin:0;padding:0}
+.nbx li{position:relative;padding-left:12px;margin-bottom:7px;font-size:12px;font-weight:600;line-height:1.68;color:var(--warn)}
+.nbx li:last-child{margin-bottom:0}
+.nbx li::before{content:"·";position:absolute;left:1px;top:-1px;font-weight:800}
+.nbx li b{font-weight:800}
+.nbx .nbx-f{margin:11px 0 0;padding-top:10px;border-top:1px solid color-mix(in srgb,var(--warn) 32%,transparent);
+  font-size:12px;font-weight:700;line-height:1.72;color:var(--warn)}
+.nbx .nbx-f b{font-weight:800}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ╔══════════════════════════════════════════════════════════════════════╗
+     ║  광고 자리 ① 맨 위 · 320×50 (모바일·PC 같은 크기)                     ║
+     ║  단위 ID 는 스크립트 아래쪽 AD.units 한 곳에서 바꿉니다.               ║
+     ║  ins·script 를 여기 직접 쓰지 않고 AD 가 넣는 이유                     ║
+     ║   · 보이는 자리만 부르려고(안 보이는 광고는 부르지 않음)               ║
+     ║   · 한 페이지 4개 제한을 코드 한 곳에서 지키려고                       ║
+     ║  크기는 휴대폰에 들어가는 것만 씁니다 — 320×50 · 320×100 · 300×250     ║
+     ║  한 화면에 4곳 — 모바일 ① 맨 위 ③ 본문 ④ 저장 완료 카드 ⑤ 하단 오버형  ║
+     ║              PC   ① 맨 위 ② 결과 카드 위 ③ 본문 ④ 완료 카드            ║
+     ╚══════════════════════════════════════════════════════════════════════╝ -->
+<div class="ad-slot ad-top" id="ad-top"></div>
+
+<!-- 네이버·카카오 앱 안에서 열렸을 때만 보이는 띠 (body.inapp)
+     WebView 는 파일 저장이 막혀 있어, 파일을 넣기 전에 옮겨 가는 편이 낫다 -->
+<div class="iabar" id="iabar">
+  <div class="ia-t"><span id="iaMsg">앱 안에서 열려서 파일 저장이 안 될 수 있어요.</span>
+    <small id="iaSub">파일을 넣기 전에 옮기면 다시 고르지 않아도 됩니다.</small></div>
+  <button class="ia-go" id="iaGo" type="button">크롬에서 열기</button>
+  <button class="ia-x" id="iaX" type="button" aria-label="안내 닫기">✕</button>
+</div>
+
+<header>
+  <div class="logo"><span class="ico">📑</span><span>문서 파일 용량 줄이기</span></div>
+  <p class="tag">한글·PPT·엑셀·워드 속 <b>사진만</b> 문서에 보이는 크기에 맞춰 줄입니다 · 글·표·서식은&nbsp;그대로</p>
+  <div class="badges">
+    <span class="badge">🔒 파일이 서버로 전송되지 않음</span>
+    <span class="badge gray">hwp · hwpx · pptx · xlsx · docx</span>
+    <span class="badge gray">무료 · 설치 없음</span>
+    <span class="badge gray">10MB 첨부 제한 맞춤</span>
+  </div>
+</header>
+
+<div class="layout">
+<main id="form">
+
+<!-- 1. 파일 넣기 -->
+<section class="card" id="addCard">
+  <h2><span><span class="n">1</span>파일 넣기</span><span class="pvinfo" id="addInfo"></span></h2>
+  <div id="drop" tabindex="0" role="button" aria-label="문서 파일 고르기">
+    <div class="big">📄</div>
+    <div class="t1">문서를 여기에 놓거나 눌러서 선택</div>
+    <div class="t2">여러 개 한 번에 · 사진이 많이 든 문서일수록 많이 줄어듭니다</div>
+    <div class="kinds"><span>한글 hwp</span><span>한글 hwpx</span><span>PPT pptx</span><span>엑셀 xlsx</span><span>워드 docx</span></div>
+  </div>
+  <input type="file" id="file" accept=".hwp,.hwpx,.pptx,.pptm,.ppsx,.potx,.xlsx,.xlsm,.xltx,.docx,.docm,.dotx" multiple>
+</section>
+
+<!-- 2. 얼마나 줄일까요 -->
+<section class="card" id="setCard">
+  <h2><span><span class="n">2</span>얼마나 줄일까요</span><span class="pvinfo" id="setHint">보통 · 150dpi</span></h2>
+
+  <div class="row">
+    <div class="seg" id="segMode">
+      <button type="button" data-m="light">약하게<i>220dpi · 인쇄 품질</i></button>
+      <button type="button" data-m="normal" class="on">보통<i>150dpi · 권장</i></button>
+      <button type="button" data-m="strong">강하게<i>96dpi · 화면용</i></button>
+      <button type="button" data-m="target">목표 용량<i>MB 맞춤</i></button>
+    </div>
+    <p class="seghelp" id="segHelp">dpi는 사진이 <b>문서에 실제로 보이는 크기</b>를 기준으로 셉니다. 폭 8cm로 들어간 사진이면 150dpi에서 가로 472픽셀만 남깁니다 — A4로 인쇄해도 차이를 느끼기 어려운 선입니다.</p>
+  </div>
+
+  <div class="row hide" id="tgtRow">
+    <div class="lab"><span>파일마다 이 용량 아래로</span><span class="hint">화질을 단계별로 낮추며 목표에 가장 가까운 설정을 찾습니다</span></div>
+    <div class="tgtline">
+      <input type="number" id="tgtVal" value="10" min="0.1" max="2000" step="0.1" inputmode="decimal" aria-label="목표 용량(MB)">
+      <span class="unit">MB 이하</span>
+    </div>
+    <div class="chips" id="tgtChips">
+      <button type="button" class="chip" data-t="1">1MB</button>
+      <button type="button" class="chip" data-t="3">3MB</button>
+      <button type="button" class="chip" data-t="5">5MB</button>
+      <button type="button" class="chip on" data-t="10">10MB</button>
+      <button type="button" class="chip" data-t="20">20MB</button>
+      <button type="button" class="chip" data-t="30">30MB</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <label class="chk"><input type="checkbox" id="optJpeg" checked>
+      <span>PNG·BMP로 들어간 사진은 JPG로 바꾸기<i>복사해서 붙여 넣은 사진은 PNG·BMP로 들어가 아주 큽니다. 투명한 부분이 있거나 도표·화면 캡처처럼 평평한 그림은 PNG 그대로 둡니다.</i></span></label>
+    <label class="chk"><input type="checkbox" id="optQuant" checked>
+      <span>화면 캡처·도표(PNG)는 256색으로 줄이기<i>PPT에 캡처 그림이 많을 때 크게 줄어듭니다. 원본과 눈에 띄게 달라지는 그림(사진이 섞인 캡처 등)은 자동으로 건너뜁니다. 색이 원래 256가지 이하인 그림은 끄더라도 손실 없이 줄입니다.</i></span></label>
+  </div>
+
+  <div id="prog"><div class="bar"><i id="bar"></i></div><div class="ptxt" id="ptxt">처리 중…</div></div>
+</section>
+
+<!-- 3. 결과 목록 -->
+<section class="card hide" id="listCard">
+  <h2><span><span class="n">3</span>결과 <span class="cnt" id="cnt">0</span>개</span><span class="pvinfo" id="sumCut"></span></h2>
+  <div class="tools">
+    <button class="mini" id="addMore" type="button">＋ 파일 추가</button>
+    <button class="mini danger" id="clear" type="button">전체 삭제</button>
+  </div>
+  <ul id="list"></ul>
+
+  <div class="tot">
+    <div><b>원본 합계</b><span id="tSrc">–</span></div>
+    <div><b>줄인 뒤</b><span id="tOut" class="big">–</span></div>
+    <div><b>줄어든 비율</b><span id="tCut" class="big">–</span></div>
+  </div>
+
+  <div class="note info" id="listNote">
+    파일을 <b>누르면</b> 결과 카드에 그 파일의 사진 목록이 나옵니다. 오른쪽 <b>⬇</b> 로 파일마다 따로 받을 수 있습니다.
+    설정을 바꾸면 <b>바로 다시 줄여서</b> 결과가 갱신됩니다.
+  </div>
+  <div class="note warn hide" id="warnBox"></div>
+</section>
+
+</main>
+
+<aside class="side" id="side">
+  <!-- 광고 자리 ② PC 결과 카드 바로 위 320×50 · 좁은 화면에서는 숨깁니다 -->
+  <div class="ad-slot" id="ad-side"></div>
+  <section class="card pv" id="pvCard">
+    <h2><span>결과 확인 · 저장</span><span class="pvstate" id="pvState"></span></h2>
+    <div class="pvtitle" id="pvTitle">줄인 문서가 여기에 나옵니다</div>
+    <div class="actions">
+      <button class="btn pri" id="dl" type="button" disabled>⬇ 이 파일 내려받기</button>
+      <button class="btn hide" id="dlAll" type="button" disabled>전부 ZIP으로</button>
+    </div>
+    <div class="pvempty" id="pvEmpty"><span class="big">📑</span>문서를 넣으면 무엇이 얼마나 줄었는지<br>여기에 바로 나옵니다.</div>
+    <div id="pvBody" class="hide">
+      <div class="comp" id="comp"></div>
+      <div class="plh"><span id="plTitle">문서 속 사진</span><span id="plSub"></span></div>
+      <ul id="pvList"></ul>
+      <button class="mini more hide" id="pvMore" type="button">사진 더 보기</button>
+      <div class="note warn hide" id="pvNotes"></div>
+      <p class="fine" id="pvNote"></p>
+    </div>
+  </section>
+
+  <!-- 광고 자리 ④ 저장 완료 카드 300×250 — 내려받기를 누른 다음에 펼쳐지고, 화면을 덮지 않습니다.
+       닫기는 카드 머리(광고에서 멀리 떨어진 곳)에 둡니다 — 광고 안 닫기 버튼은 금지 -->
+  <section class="card hide" id="doneCard">
+    <h2><span>저장했습니다</span><button class="mini" id="doneHide" type="button">닫기</button></h2>
+    <p class="dmsg" id="doneMsg"></p>
+    <ol class="dsteps">
+      <li>저장한 파일을 <b>한글·오피스에서 열어</b> 사진·도장·글자가 또렷한지 확인하세요.</li>
+      <li>제출처의 <b>첨부 용량·파일 형식 규정</b>에 맞는지 한 번 더 보세요.</li>
+      <li><b>원본은 지우지 말고</b> 따로 두세요. 줄인 사진은 원래 화질로 되돌릴 수 없습니다.</li>
+    </ol>
+    <p class="dwarn hide" id="doneInapp">저장된 파일이 안 보이나요? 앱 안 브라우저는 내려받기가 막혀 있습니다.
+      <button type="button" id="doneGo">다른 브라우저로 열기</button></p>
+    <div id="doneAd"><span class="ad-lab">광고</span><div class="ad-slot" id="ad-done"></div></div>
+  </section>
+</aside>
+</div>
+
+<!-- 광고 자리 ③ 본문 중간 320×100 — 파일을 넣고 줄이는 칸이 다 끝난 자리에 둡니다(입력 중에는 광고를 띄우지 않는다는 애드핏 조항).
+     버튼·입력칸에서 18px 이상 떼어 놓습니다. 모바일·PC 가 같은 자리라 단위 ID 하나면 됩니다 -->
+<div class="ad-slot" id="ad-mid"></div>
+
+<section class="card">
+  <h2><span>이럴 때 씁니다</span></h2>
+  <ul class="use">
+    <li><b>공문·메일·민원 사이트에 첨부가 안 될 때</b>
+      <span class="d">업무 메일과 공공기관 사이트는 보통 <code>10MB</code>·<code>20MB</code> 같은 첨부 제한이 있습니다.
+        <b>목표 용량</b>에 그 숫자를 적으면 사진 화질을 단계별로 낮춰 제한 아래로 맞춰 줍니다.</span></li>
+    <li><b>휴대폰 사진을 잔뜩 넣은 보고서·사진대지</b>
+      <span class="d">휴대폰 사진은 한 장에 3~8MB, 가로 4,000픽셀이 넘습니다. 문서에 손바닥만 하게 넣으면 그중 대부분이 쓰이지 않는 픽셀입니다.
+        이런 문서가 가장 많이 줄어듭니다 — 보통 <b>80~95%</b>.</span></li>
+    <li><b>복사해서 붙여 넣은 사진으로 불어난 PPT</b>
+      <span class="d">웹이나 메신저에서 복사해 붙인 사진은 PNG로 들어가 JPG보다 몇 배 큽니다.
+        투명한 부분이 없는 사진이면 JPG로 바꿔 크게 줄입니다.</span></li>
+    <li><b>한글이 없는 PC·맥·휴대폰에서 급할 때</b>
+      <span class="d">한글·오피스 프로그램 없이 브라우저만 있으면 됩니다. 여러 파일을 한꺼번에 넣어도 파일마다 따로 줄여 줍니다.</span></li>
+    <li><b>남에게 보이면 안 되는 문서</b>
+      <span class="d">공문·계약서·인사 자료·내부 보고서는 <b>업로드 자체를 하지 않는</b> 이 도구가 맞습니다.
+        페이지를 연 뒤 인터넷을 꺼도 그대로 동작합니다.</span></li>
+  </ul>
+</section>
+
+<section class="card">
+  <h2><span>얼마나 줄어드나 — 견본 문서로 잰 값</span></h2>
+  <div class="tblwrap">
+    <table class="ex">
+      <thead><tr><th>문서</th><th>들어 있던 사진</th><th>원본 → 줄인 뒤 (보통)</th></tr></thead>
+      <tbody id="exBody">
+        <tr><td><b>한글(hwp)</b> 시설 점검 보고 2쪽</td><td>휴대폰 사진 6장(장당 3~3.7MB)을 사진대지 표에 폭 7.2cm로</td><td>20.9MB → <b>0.57MB</b> (−97%)</td></tr>
+        <tr><td><b>파워포인트</b> 교육 자료 4장</td><td>배경·사진 4장, 앱 화면 캡처, 복사해 붙인 PNG 사진</td><td>16.2MB → <b>0.48MB</b> (−97%)</td></tr>
+        <tr><td><b>워드</b> 안내문</td><td>사진 3장(워드가 저장할 때 이미 220dpi로 줄여 둠)</td><td>930KB → <b>140KB</b> (−85%)</td></tr>
+        <tr><td><b>엑셀</b> 사진 대장</td><td>사진 4장(엑셀이 저장할 때 이미 220dpi로 줄여 둠)</td><td>363KB → <b>71KB</b> (−81%)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="fine">줄인 파일은 한글·파워포인트·워드·엑셀로 다시 열어 PDF로 뽑아 원본과 쪽마다 대조했습니다(쪽 수 같음, 화면 차이 평균 1.4/255 이하).
+    견본 사진은 코드로 그린 그림이라 실제 사진보다 조금 더 잘 줄어듭니다 — 실제 업무 문서로 시험했을 때 휴대폰 사진이 대부분인 49MB 한글 문서가 1.7MB(−96%)였습니다.
+    <b>글·표만 있는 문서</b>나 <b>이미 작게 넣은 사진</b>은 거의 줄지 않습니다.</p>
+</section>
+
+<section class="card">
+  <h2><span>자주 묻는 것</span></h2>
+
+  <details>
+    <summary>파일이 정말 서버로 안 올라가나요?</summary>
+    <p>올라가지 않습니다. 이 페이지에는 <b>파일을 어디론가 보내는 코드 자체가 없습니다.</b>
+      선택한 문서는 브라우저 메모리에서 읽어 브라우저 안에서 줄이고, 결과도 브라우저가 직접 저장합니다.
+      확인하고 싶으면 <b>페이지를 연 뒤 인터넷(와이파이)을 끄고</b> 써 보세요. 그대로 동작합니다.</p>
+  </details>
+
+  <details>
+    <summary>글자·표·서식도 바뀌나요?</summary>
+    <p><b>아니요, 사진만 바꿉니다.</b> 한글 파일은 본문·문서 정보 스트림을, 오피스 파일은 사진이 아닌 모든 항목을 <b>바이트 그대로</b> 옮겨 담습니다.
+      사진을 JPG로 바꾼 경우에만 그 사진의 이름표(확장자)와 목록 한 줄을 고칩니다.
+      자르기를 해 둔 사진은 자르기 값도 같은 비율로 맞춰 보이는 부분이 그대로입니다.</p>
+  </details>
+
+  <details>
+    <summary>사진이 흐려지지 않나요? dpi가 무엇인가요?</summary>
+    <p>dpi는 <b>1인치(2.54cm)에 픽셀이 몇 개 들어가느냐</b>입니다. 이 도구는 사진이 <b>문서에 실제로 보이는 크기</b>를 재서
+      그 크기에 필요한 만큼만 남깁니다. 문서에 폭 15cm로 들어간 가로 4,032픽셀 사진은 683dpi로, 인쇄에 필요한 양의 4배가 넘습니다.
+      보통(150dpi)으로 줄이면 886픽셀이 되는데 A4로 인쇄해도 차이를 느끼기 어렵습니다.
+      <b>도면·세밀한 사진</b>처럼 크게 확대해서 봐야 하는 문서는 <b>약하게(220dpi)</b>를 고르세요. 결과 카드에서 사진을 누르면 원본과 가운데 부분을 나란히 비교할 수 있습니다.</p>
+  </details>
+
+  <details>
+    <summary>얼마나 줄어드나요? 하나도 안 줄었어요</summary>
+    <p>문서가 <b>무엇으로 무거운지</b>에 따라 다릅니다. 휴대폰 사진을 넣은 문서는 80~95%까지 줄지만,
+      <b>글과 표만 있는 문서</b>, <b>이미 작게 넣은 사진</b>, <b>도형 그림(EMF·WMF)</b>은 줄일 것이 없습니다.
+      엑셀은 사진보다 <b>시트 데이터</b>(수만 행·빈칸까지 칠한 서식)가 큰 경우가 많은데, 그때는 결과 카드에 안내가 뜹니다.
+      파워포인트의 <b>동영상·포함된 글꼴</b>도 이 도구가 줄이지 않는 부분입니다(동영상은 「동영상 압축」 도구로 영상 자체를 줄여 다시 넣으세요).</p>
+  </details>
+
+  <details>
+    <summary>한글에도 「그림 용량 줄이기」가 있지 않나요?</summary>
+    <p>있습니다. 한글 2010 이후에는 그림을 선택하면 나오는 <b>[그림] 탭의 「줄이기」</b>에서 「모든 그림에 바로 적용」으로 문서 속 그림을 한 번에 줄일 수 있고, 「용량 줄이기 설정」에 삽입한 그림 크기에 맞춰 줄이는 옵션도 있습니다(버전마다 메뉴 위치가 조금 다릅니다).
+      한글이 있고 파일이 하나라면 그 기능도 좋은 방법입니다. 이 도구는 <b>한글이 없는 PC·맥·휴대폰</b>, <b>여러 파일을 한꺼번에</b>,
+      <b>「10MB 이하로」처럼 목표 용량에 맞추기</b>, 그리고 <b>PPT·엑셀·워드까지 같은 방법으로</b> 줄일 때 편합니다.</p>
+  </details>
+
+  <details>
+    <summary>줄인 뒤 사진을 크게 늘리면 어떻게 되나요?</summary>
+    <p>문서에 <b>지금 보이는 크기</b>에 맞춰 줄였기 때문에, 저장한 뒤 사진을 몇 배로 늘리거나 잘라 둔 부분을 다시 넓히면 흐리게 보일 수 있습니다.
+      편집이 끝난 <b>제출·발송용 사본</b>에 쓰고, 계속 고칠 문서는 <b>원본을 따로 보관</b>하세요.</p>
+  </details>
+
+  <details>
+    <summary>암호 걸린 파일·배포용 문서·옛 형식(.ppt .xls .doc)도 되나요?</summary>
+    <p>안 됩니다. <b>열기 암호</b>가 걸린 파일과 한글 <b>배포용 문서</b>는 내용이 잠겨 있어 읽을 수 없습니다 — 암호를 푼 사본으로 저장한 뒤 넣어 주세요.
+      <b>97-2003 형식(.ppt · .xls · .doc)</b>은 파워포인트·엑셀·워드에서 새 형식(.pptx · .xlsx · .docx)으로 다시 저장하면 됩니다.
+      PDF는 <a href="https://hwj-hub.github.io/pdf_compress/" target="_blank" rel="noopener">PDF 용량 줄이기</a>, 사진 파일 자체는 <a href="https://hwj-hub.github.io/image_compressor/" target="_blank" rel="noopener">사진 용량 줄이기</a>를 쓰세요.</p>
+  </details>
+
+  <details>
+    <summary>얼마나 큰 파일까지 되나요? 휴대폰에서도 되나요?</summary>
+    <p>개수 제한은 없습니다. 다만 <b>파일 전체를 메모리에 올려서 처리</b>하기 때문에 기기 메모리가 한계입니다.
+      PC라면 수백 MB도 무리 없고, 스마트폰에서는 <b>합쳐서 100MB 안쪽</b>을 권합니다.
+      휴대폰에서는 파일 선택을 누르면 <b>파일 앱·다운로드 폴더</b>에서 문서를 고를 수 있습니다.</p>
+  </details>
+
+  <details>
+    <summary>네이버·카카오톡 앱에서 열었더니 저장이 안 돼요</summary>
+    <p>앱 안에서 열리는 화면(인앱 브라우저)은 <b>파일 내려받기 기능이 막혀 있습니다.</b>
+      그래서 앱 안에서 열면 안내 창이 먼저 뜹니다. <b>크롬에서 열기</b>(아이폰은 주소 복사 후 사파리)를 눌러
+      브라우저를 옮긴 다음 파일을 넣어 주세요.</p>
+  </details>
+</section>
+
+<!-- ══ 주의 문구 ══ -->
+<div class="nbx">
+  <div class="nbx-h"><span class="ic">!</span><span>내려받기 전에 확인하세요</span></div>
+  <ul>
+    <li><b>이 도구는 사진 화질을 실제로 낮춰 용량을 줄입니다.</b> 되돌릴 수 없으니
+      <b>원본 파일은 반드시 따로 보관</b>하세요. 제출·발송 전에는 저장한 파일을 <b>한글·오피스에서 직접 열어</b>
+      사진·도장·서명·작은 글씨가 알아보이는지 눈으로 확인하셔야 합니다.</li>
+    <li>사진을 <b>문서에 보이는 크기</b>에 맞춰 줄이므로, 줄인 뒤 사진을 크게 늘리면 흐려질 수 있습니다.
+      선명도 자체가 심사 대상인 서류(도면·증빙 사진 원본 등)는 <b>제출처 규정</b>을 먼저 확인하세요.</li>
+    <li><b>전자서명</b>은 무효가 되고, 도형 그림(EMF·WMF)·움직이는 GIF·인쇄용 CMYK 사진·동영상은 <b>그대로 두고</b> 지나갑니다.
+      드물게 문서를 만든 프로그램에 따라 <b>일부 사진이 다르게 보일 수 있습니다.</b>
+      문서에 <b>개인정보가 필요 이상으로 담기지 않았는지</b>도 함께 확인하세요.</li>
+  </ul>
+  <p class="nbx-f">이 도구는 <b>있는 그대로 제공되며</b>, 이를 사용해 만든 문서로 발생한
+    어떠한 손해에 대해서도 <b>제작자와 운영자는 법적 책임을 지지 않습니다.</b></p>
+</div>
+
+<footer>
+  <b>문서 파일 용량 줄이기</b> · 업로드 없이 브라우저에서 처리<br>
+  한글 HWP(복합 문서·레코드)·HWPX·오피스(ZIP·관계 파일)를 직접 읽고 씁니다 · 사진은 브라우저 내장 Canvas로 다시 압축 · 외부 라이브러리 없음<br>
+  파일은 어디에도 전송되지 않으며, 페이지를 연 뒤에는 인터넷 없이도 동작합니다.<br>
+  함께 쓰면 좋은 도구 · <a href="https://hwj-hub.github.io/pdf_compress/" target="_blank" rel="noopener">PDF 용량 줄이기</a> · <a href="https://hwj-hub.github.io/image_compressor/" target="_blank" rel="noopener">사진 용량 줄이기</a> · <a href="https://hwj-hub.github.io/video_compress/" target="_blank" rel="noopener">동영상 압축</a> · <a href="https://hwj-hub.github.io/hwp_viewer/" target="_blank" rel="noopener">한글 뷰어</a>
+</footer>
+</div>
+
+<!-- 앱 안(네이버·카카오톡 등)에서 열렸을 때 사용을 막는 창.
+     WebView 는 파일 내려받기를 못 해서, 다 줄여도 저장이 안 된다 -->
+<div class="iamodal" id="iaModal" role="dialog" aria-modal="true" aria-labelledby="iaTitle">
+  <div class="iasheet">
+    <div class="iaic">📱</div>
+    <h2 id="iaTitle">앱 안에서는 줄인 파일이 저장되지 않습니다</h2>
+    <p class="iap" id="iaDesc"></p>
+    <ol class="iasteps" id="iaSteps"></ol>
+    <button class="iabtn" id="iaGo2" type="button">크롬에서 열기</button>
+    <p class="iafine"><button type="button" id="iaStay">저장은 안 해도 돼요 · 그냥 볼게요</button></p>
+  </div>
+</div>
+
+<!-- 광고 자리 ⑤ 하단 오버형 320×50(모바일) — 읽는 구간에서만 올라오고, 입력 중·창이 열렸을 때는
+     내려가 있습니다. 바 높이만큼 본문 아래 여백을 늘려 아무것도 가리지 않습니다 -->
+<div id="anchor"><span class="amk">광고</span><div class="ad-slot" id="ad-anchor"></div>
+  <button class="axl" id="anchorX" type="button" aria-label="광고 닫기">✕</button></div>
+
+<div id="mbar"><div class="in"><div class="k">결과 확인 · 저장<b id="mbarTxt">줄인 문서</b></div><button class="go" id="mbarGo" type="button">결과 보기 ↓</button></div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+'use strict';
+/* ════════════════════════════════════════════════════════════════════
+   문서 용량 줄이기 — 엔진
+   한글(HWP·HWPX)·파워포인트·엑셀·워드 파일 속 사진만 다시 압축하고
+   나머지(글·표·서식·수식)는 바이트 그대로 옮겨 담는다.
+   외부 라이브러리 없이 ZIP·CFB(복합 문서)·HWP 레코드·OOXML 관계를 직접 읽고 쓴다.
+   ════════════════════════════════════════════════════════════════════ */
+
+const TD8 = new TextDecoder('utf-8');
+const TD16 = new TextDecoder('utf-16le');
+const TE8 = new TextEncoder();
+
+/* ── 압축 해제: raw deflate (JS 로 직접, 동기) ──
+   HWP 스트림과 ZIP 항목 모두 zlib 머리가 없는 raw deflate 다.
+   끝 블록까지 제대로 풀렸는지(ok)를 함께 돌려준다 — 덜 풀린 스트림을 다시 압축해 넣으면
+   문서가 망가지므로, ok 가 아니면 그 스트림은 손대지 않는다. */
+const INF_LBASE = new Uint16Array([3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258]);
+const INF_LEXT = new Uint8Array([0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0]);
+const INF_DBASE = new Uint16Array([1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577]);
+const INF_DEXT = new Uint8Array([0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13]);
+const INF_CLORD = [16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15];
+function infBuild(lens, n) {
+  let max = 0;
+  for (let i = 0; i < n; i++) if (lens[i] > max) max = lens[i];
+  if (max === 0) return { t: new Uint16Array(2), bits: 1 };
+  const cnt = new Uint16Array(16);
+  for (let i = 0; i < n; i++) cnt[lens[i]]++;
+  cnt[0] = 0;
+  const nextc = new Uint16Array(16);
+  let code = 0;
+  for (let b = 1; b <= 15; b++) { code = (code + cnt[b - 1]) << 1; nextc[b] = code; }
+  const size = 1 << max, t = new Uint16Array(size);
+  for (let s = 0; s < n; s++) {
+    const l = lens[s]; if (!l) continue;
+    let c = nextc[l]++, r = 0;
+    for (let k = 0; k < l; k++) { r = (r << 1) | (c & 1); c >>= 1; }
+    const e = (s << 4) | l;
+    for (let j = r; j < size; j += 1 << l) t[j] = e;
+  }
+  return { t, bits: max };
+}
+let INF_FIXED_L = null, INF_FIXED_D = null;
+function inflateRaw(data, sizeHint) {
+  const inLen = data.length;
+  let ip = 0, ok = false;
+  let out = new Uint8Array(Math.max(256, sizeHint || inLen * 4));
+  let op = 0, bb = 0, bc = 0;
+  const grow = need => {
+    let ns = out.length * 2;
+    while (ns < need) ns *= 2;
+    const o = new Uint8Array(ns); o.set(out.subarray(0, op)); out = o;
+  };
+  try {
+    for (;;) {
+      while (bc < 3 && ip < inLen) { bb |= data[ip++] << bc; bc += 8; }
+      if (bc < 3) break;
+      const final = bb & 1, type = (bb >>> 1) & 3;
+      bb >>>= 3; bc -= 3;
+      if (type === 0) {
+        const drop = bc & 7; bb >>>= drop; bc -= drop;
+        ip -= bc >> 3; bb = 0; bc = 0;
+        if (ip + 4 > inLen) break;
+        const len = data[ip] | (data[ip + 1] << 8), nlen = data[ip + 2] | (data[ip + 3] << 8);
+        if ((len ^ 0xFFFF) !== nlen) break;
+        ip += 4;
+        if (ip + len > inLen) break;
+        if (op + len > out.length) grow(op + len);
+        out.set(data.subarray(ip, ip + len), op);
+        op += len; ip += len;
+      } else if (type === 1 || type === 2) {
+        let lt, dt;
+        if (type === 1) {
+          if (!INF_FIXED_L) {
+            const l = new Uint8Array(288);
+            for (let i = 0; i < 144; i++) l[i] = 8;
+            for (let i = 144; i < 256; i++) l[i] = 9;
+            for (let i = 256; i < 280; i++) l[i] = 7;
+            for (let i = 280; i < 288; i++) l[i] = 8;
+            INF_FIXED_L = infBuild(l, 288);
+            INF_FIXED_D = infBuild(new Uint8Array(30).fill(5), 30);
+          }
+          lt = INF_FIXED_L; dt = INF_FIXED_D;
+        } else {
+          while (bc < 14 && ip < inLen) { bb |= data[ip++] << bc; bc += 8; }
+          if (bc < 14) break;
+          const hlit = (bb & 31) + 257, hdist = ((bb >>> 5) & 31) + 1, hclen = ((bb >>> 10) & 15) + 4;
+          bb >>>= 14; bc -= 14;
+          const cl = new Uint8Array(19);
+          for (let i = 0; i < hclen; i++) {
+            while (bc < 3 && ip < inLen) { bb |= data[ip++] << bc; bc += 8; }
+            cl[INF_CLORD[i]] = bb & 7; bb >>>= 3; bc -= 3;
+          }
+          const ct = infBuild(cl, 19);
+          const lens = new Uint8Array(hlit + hdist);
+          let i = 0;
+          while (i < hlit + hdist) {
+            while (bc < 16 && ip < inLen) { bb |= data[ip++] << bc; bc += 8; }
+            const e = ct.t[bb & ((1 << ct.bits) - 1)], l = e & 15;
+            if (!l || l > bc) throw 0;
+            bb >>>= l; bc -= l;
+            const sym = e >> 4;
+            if (sym < 16) lens[i++] = sym;
+            else if (sym === 16) {
+              if (!i) throw 0;
+              const rep = 3 + (bb & 3); bb >>>= 2; bc -= 2;
+              const pv = lens[i - 1];
+              for (let k = 0; k < rep && i < lens.length; k++) lens[i++] = pv;
+            } else if (sym === 17) {
+              const rep = 3 + (bb & 7); bb >>>= 3; bc -= 3; i += rep;
+            } else {
+              const rep = 11 + (bb & 127); bb >>>= 7; bc -= 7; i += rep;
+            }
+          }
+          lt = infBuild(lens.subarray(0, hlit), hlit);
+          dt = infBuild(lens.subarray(hlit), hdist);
+        }
+        const ltt = lt.t, lm = (1 << lt.bits) - 1, dtt = dt.t, dm = (1 << dt.bits) - 1;
+        for (;;) {
+          while (bc < 24 && ip < inLen) { bb |= data[ip++] << bc; bc += 8; }
+          const e = ltt[bb & lm], l = e & 15;
+          if (!l || l > bc) throw 0;
+          bb >>>= l; bc -= l;
+          const sym = e >> 4;
+          if (sym < 256) {
+            if (op >= out.length) grow(op + 1);
+            out[op++] = sym;
+            continue;
+          }
+          if (sym === 256) break;
+          const li = sym - 257;
+          if (li >= 29) throw 0;
+          let len = INF_LBASE[li];
+          const lx = INF_LEXT[li];
+          if (lx) { len += bb & ((1 << lx) - 1); bb >>>= lx; bc -= lx; }
+          while (bc < 24 && ip < inLen) { bb |= data[ip++] << bc; bc += 8; }
+          const de = dtt[bb & dm], dl = de & 15;
+          if (!dl || dl > bc) throw 0;
+          bb >>>= dl; bc -= dl;
+          const ds = de >> 4;
+          if (ds >= 30) throw 0;
+          let dist = INF_DBASE[ds];
+          const dx = INF_DEXT[ds];
+          if (dx) {
+            while (bc < dx && ip < inLen) { bb |= data[ip++] << bc; bc += 8; }
+            dist += bb & ((1 << dx) - 1); bb >>>= dx; bc -= dx;
+          }
+          if (dist > op) throw 0;
+          if (op + len > out.length) grow(op + len);
+          let from = op - dist;
+          if (dist >= len) { out.copyWithin(op, from, from + len); op += len; }
+          else { for (let k = 0; k < len; k++) out[op++] = out[from++]; }
+        }
+      } else break;
+      if (final) { ok = true; break; }
+    }
+  } catch (e) { ok = false; }
+  return { out: out.subarray(0, op), ok };
+}
+
+/* ── 압축: raw deflate ── 브라우저 CompressionStream 을 쓰고,
+   없는 옛 브라우저에서는 「저장 블록」(압축 없이 감싸기)으로 똑같이 유효한 deflate 를 만든다 */
+const HAS_CS = typeof CompressionStream !== 'undefined';
+async function deflateRaw(u8) {
+  if (HAS_CS) {
+    try {
+      const st = new Blob([u8]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+      return new Uint8Array(await new Response(st).arrayBuffer());
+    } catch (e) { /* 아래로 */ }
+  }
+  return storedDeflate(u8);
+}
+function storedDeflate(u8) {
+  const n = u8.length, blocks = Math.max(1, Math.ceil(n / 65535));
+  const out = new Uint8Array(n + blocks * 5);
+  let p = 0;
+  for (let b = 0; b < blocks; b++) {
+    const s = b * 65535, len = Math.min(65535, n - s);
+    out[p++] = b === blocks - 1 ? 1 : 0;
+    out[p++] = len & 255; out[p++] = len >>> 8;
+    out[p++] = ~len & 255; out[p++] = (~len >>> 8) & 255;
+    out.set(u8.subarray(s, s + len), p); p += len;
+  }
+  return out;
+}
+
+const CRC_T = (() => {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; }
+  return t;
+})();
+function crc32(u8) {
+  let c = 0xFFFFFFFF;
+  for (let i = 0; i < u8.length; i++) c = CRC_T[(c ^ u8[i]) & 255] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+
+/* 작은 도우미 */
+const sleep0 = () => new Promise(r => setTimeout(r, 0));
+function u16le(u8, o) { return u8[o] | (u8[o + 1] << 8); }
+function u32le(u8, o) { return (u8[o] | (u8[o + 1] << 8) | (u8[o + 2] << 16) | (u8[o + 3] << 24)) >>> 0; }
+function i32le(u8, o) { return u8[o] | (u8[o + 1] << 8) | (u8[o + 2] << 16) | (u8[o + 3] << 24); }
+function put16(u8, o, v) { u8[o] = v & 255; u8[o + 1] = (v >>> 8) & 255; }
+function put32(u8, o, v) { u8[o] = v & 255; u8[o + 1] = (v >>> 8) & 255; u8[o + 2] = (v >>> 16) & 255; u8[o + 3] = (v >>> 24) & 255; }
+function concatU8(parts, total) {
+  if (total == null) { total = 0; for (const p of parts) total += p.length; }
+  const out = new Uint8Array(total);
+  let o = 0;
+  for (const p of parts) { out.set(p, o); o += p.length; }
+  return out;
+}
+function bytesEq(a, b) {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+  return true;
+}
+function DCErr(msg, code) { const e = new Error(msg); e.code = code || 'ERR'; return e; }
+
+/* ════════════════════════════════════════════════════════════════════
+   ZIP 읽기·쓰기 — PPTX·XLSX·DOCX·HWPX 는 전부 ZIP 이다.
+   다시 쓸 때는 손대지 않은 항목의 압축된 바이트·CRC 를 그대로 옮긴다
+   (다시 압축하지 않으니 빠르고, 원본과 한 바이트도 다르지 않다).
+   항목 순서도 그대로 둔다 — HWPX 는 mimetype 이 맨 앞·무압축이어야 한다.
+   ════════════════════════════════════════════════════════════════════ */
+function zipRead(u8) {
+  const n = u8.length;
+  let eocd = -1;
+  for (let i = n - 22; i >= Math.max(0, n - 65557); i--) {
+    if (u8[i] === 0x50 && u8[i + 1] === 0x4B && u8[i + 2] === 0x05 && u8[i + 3] === 0x06) { eocd = i; break; }
+  }
+  if (eocd < 0) throw DCErr('ZIP 목차를 찾지 못했습니다 — 파일이 잘렸거나 손상됐습니다', 'CORRUPT');
+  let count = u16le(u8, eocd + 10), cdSize = u32le(u8, eocd + 12), cdOff = u32le(u8, eocd + 16);
+  if (count === 0xFFFF || cdOff === 0xFFFFFFFF || cdSize === 0xFFFFFFFF) {
+    const loc = eocd - 20;
+    if (loc >= 0 && u32le(u8, loc) === 0x07064B50) {
+      const z64 = Number(u32le(u8, loc + 8)) + u32le(u8, loc + 12) * 4294967296;
+      if (z64 + 56 <= n && u32le(u8, z64) === 0x06064B50) {
+        count = u32le(u8, z64 + 32) + u32le(u8, z64 + 36) * 4294967296;
+        cdOff = u32le(u8, z64 + 48) + u32le(u8, z64 + 52) * 4294967296;
+      }
+    }
+  }
+  const entries = [];
+  let p = cdOff;
+  for (let k = 0; k < count; k++) {
+    if (p + 46 > n || u32le(u8, p) !== 0x02014B50) throw DCErr('ZIP 목차가 손상됐습니다', 'CORRUPT');
+    const e = {
+      verMade: u16le(u8, p + 4), verNeed: u16le(u8, p + 6), flags: u16le(u8, p + 8), method: u16le(u8, p + 10),
+      time: u16le(u8, p + 12), date: u16le(u8, p + 14), crc: u32le(u8, p + 16),
+      csize: u32le(u8, p + 20), usize: u32le(u8, p + 24),
+      intAttr: u16le(u8, p + 36), extAttr: u32le(u8, p + 38), lho: u32le(u8, p + 42)
+    };
+    const nl = u16le(u8, p + 28), xl = u16le(u8, p + 30), cl = u16le(u8, p + 32);
+    e.nameBytes = u8.slice(p + 46, p + 46 + nl);
+    e.name = TD8.decode(e.nameBytes);
+    /* ZIP64: 4GB 를 넘는 값은 추가 필드(0x0001)에 들어 있다 */
+    if (e.usize === 0xFFFFFFFF || e.csize === 0xFFFFFFFF || e.lho === 0xFFFFFFFF) {
+      let q = p + 46 + nl;
+      const qe = q + xl;
+      while (q + 4 <= qe) {
+        const id = u16le(u8, q), sz = u16le(u8, q + 2);
+        if (id === 1) {
+          let r = q + 4;
+          const rd64 = () => { const v = u32le(u8, r) + u32le(u8, r + 4) * 4294967296; r += 8; return v; };
+          if (e.usize === 0xFFFFFFFF) e.usize = rd64();
+          if (e.csize === 0xFFFFFFFF) e.csize = rd64();
+          if (e.lho === 0xFFFFFFFF) e.lho = rd64();
+          break;
+        }
+        q += 4 + sz;
+      }
+    }
+    if (e.flags & 1) throw DCErr('암호가 걸린 ZIP 항목이 있습니다', 'ENCRYPTED');
+    const lh = e.lho;
+    if (lh + 30 > n || u32le(u8, lh) !== 0x04034B50) throw DCErr('ZIP 항목 머리가 손상됐습니다', 'CORRUPT');
+    e.dataStart = lh + 30 + u16le(u8, lh + 26) + u16le(u8, lh + 28);
+    if (e.dataStart + e.csize > n) throw DCErr('ZIP 항목이 파일 끝을 넘습니다 — 파일이 잘렸습니다', 'CORRUPT');
+    entries.push(e);
+    p += 46 + nl + xl + cl;
+  }
+  const byName = new Map();
+  for (const e of entries) byName.set(e.name, e);
+  return {
+    entries, byName,
+    raw(e) { return u8.subarray(e.dataStart, e.dataStart + e.csize); },
+    get(name) { return byName.get(name) || null; },
+    bytes(e) {
+      if (typeof e === 'string') e = byName.get(e);
+      if (!e) return null;
+      const r = u8.subarray(e.dataStart, e.dataStart + e.csize);
+      if (e.method === 0) return r;
+      if (e.method === 8) {
+        const x = inflateRaw(r, e.usize);
+        if (!x.ok || x.out.length !== e.usize) throw DCErr('압축을 풀지 못한 항목이 있습니다: ' + e.name, 'CORRUPT');
+        return x.out;
+      }
+      throw DCErr('지원하지 않는 압축 방식(' + e.method + ')입니다: ' + e.name, 'UNSUPPORTED');
+    },
+    text(e) { const b = this.bytes(e); return b ? TD8.decode(b) : null; }
+  };
+}
+
+/* items: [{ name, nameBytes?, flags, method, time, date, crc, csize, usize, data(압축된 그대로), extAttr, intAttr, verMade }] */
+function zipWrite(items) {
+  let total = 22;
+  for (const it of items) {
+    if (!it.nameBytes) it.nameBytes = TE8.encode(it.name);
+    total += 30 + it.nameBytes.length + it.data.length + 46 + it.nameBytes.length;
+  }
+  if (total > 0xFFFFFFFF) throw DCErr('결과가 4GB 를 넘어 저장할 수 없습니다', 'TOOBIG');
+  const out = new Uint8Array(total);
+  let p = 0;
+  const offs = [];
+  for (const it of items) {
+    const fl = (it.flags || 0) & ~0x0008 & 0xFFFF;          /* 크기를 머리에 적으므로 데이터 설명자는 쓰지 않는다 */
+    it.flOut = fl;
+    offs.push(p);
+    put32(out, p, 0x04034B50);
+    put16(out, p + 4, it.method === 0 ? 10 : 20);
+    put16(out, p + 6, fl); put16(out, p + 8, it.method);
+    put16(out, p + 10, it.time || 0); put16(out, p + 12, it.date || 0x21);
+    put32(out, p + 14, it.crc >>> 0); put32(out, p + 18, it.data.length); put32(out, p + 22, it.usize);
+    put16(out, p + 26, it.nameBytes.length); put16(out, p + 28, 0);
+    out.set(it.nameBytes, p + 30);
+    p += 30 + it.nameBytes.length;
+    out.set(it.data, p);
+    p += it.data.length;
+  }
+  const cdStart = p;
+  items.forEach((it, i) => {
+    put32(out, p, 0x02014B50);
+    put16(out, p + 4, it.verMade || 20); put16(out, p + 6, it.method === 0 ? 10 : 20);
+    put16(out, p + 8, it.flOut); put16(out, p + 10, it.method);
+    put16(out, p + 12, it.time || 0); put16(out, p + 14, it.date || 0x21);
+    put32(out, p + 16, it.crc >>> 0); put32(out, p + 20, it.data.length); put32(out, p + 24, it.usize);
+    put16(out, p + 28, it.nameBytes.length); put16(out, p + 30, 0); put16(out, p + 32, 0);
+    put16(out, p + 34, 0); put16(out, p + 36, it.intAttr || 0); put32(out, p + 38, it.extAttr || 0);
+    put32(out, p + 42, offs[i]);
+    out.set(it.nameBytes, p + 46);
+    p += 46 + it.nameBytes.length;
+  });
+  const cdSize = p - cdStart;
+  if (items.length > 0xFFFF) throw DCErr('항목이 너무 많아 저장할 수 없습니다', 'TOOBIG');
+  put32(out, p, 0x06054B50);
+  put16(out, p + 4, 0); put16(out, p + 6, 0);
+  put16(out, p + 8, items.length); put16(out, p + 10, items.length);
+  put32(out, p + 12, cdSize); put32(out, p + 16, cdStart); put16(out, p + 20, 0);
+  return out;
+}
+
+/* 원본 항목을 그대로 옮길 때의 항목 모양 */
+function zipKeep(zr, e) {
+  return { name: e.name, nameBytes: e.nameBytes, flags: e.flags, method: e.method, time: e.time, date: e.date,
+    crc: e.crc, usize: e.usize, data: zr.raw(e), extAttr: e.extAttr, intAttr: e.intAttr, verMade: e.verMade };
+}
+/* 새 내용으로 바꾼 항목. 사진은 이미 압축된 형식이라 무압축(0), 글(XML)은 deflate(8) */
+async function zipNew(e, name, bytes, compress) {
+  const it = { name, nameBytes: name === e.name ? e.nameBytes : TE8.encode(name), flags: e.flags & 0x0800,
+    time: e.time, date: e.date, crc: crc32(bytes), usize: bytes.length, extAttr: e.extAttr, intAttr: e.intAttr, verMade: e.verMade };
+  if (compress) {
+    const d = await deflateRaw(bytes);
+    if (d.length < bytes.length) { it.method = 8; it.data = d; return it; }
+  }
+  it.method = 0; it.data = bytes;
+  return it;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   CFB(복합 문서 · OLE2) 읽기·쓰기 — HWP 5.x 바이너리가 이 그릇이다.
+   다시 쓸 때 디렉터리 항목(이름·종류·색·형제/자식 링크·CLSID·시각)은 원본 128바이트를
+   그대로 두고 시작 섹터와 크기만 새로 적는다. 트리를 새로 짜지 않으니
+   한글이 기대하는 구조가 바뀌지 않는다. 섹터는 512바이트(v3)로 다시 깐다.
+   ════════════════════════════════════════════════════════════════════ */
+const CFB_END = 0xFFFFFFFE, CFB_FREE = 0xFFFFFFFF, CFB_FATSECT = 0xFFFFFFFD, CFB_DIFSECT = 0xFFFFFFFC;
+const CFB_SIG = [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1];
+function isCFB(u8) { for (let i = 0; i < 8; i++) if (u8[i] !== CFB_SIG[i]) return false; return u8.length >= 512; }
+
+function cfbRead(u8) {
+  if (!isCFB(u8)) throw DCErr('복합 문서 형식이 아닙니다', 'FORMAT');
+  const ssz = 1 << u16le(u8, 0x1E), mssz = 1 << u16le(u8, 0x20);
+  if (ssz !== 512 && ssz !== 4096) throw DCErr('섹터 크기를 알 수 없습니다', 'CORRUPT');
+  const nFat = u32le(u8, 0x2C), dirStart = u32le(u8, 0x30), miniCut = u32le(u8, 0x38) || 4096;
+  const miniFatStart = u32le(u8, 0x3C), difStart = u32le(u8, 0x44);
+  const nSec = Math.floor((u8.length - ssz) / ssz) + ((u8.length - ssz) % ssz ? 1 : 0);
+  const secOff = s => (s + 1) * ssz;
+  const fatSects = [];
+  for (let i = 0; i < 109 && fatSects.length < nFat; i++) {
+    const v = u32le(u8, 0x4C + i * 4);
+    if (v === CFB_FREE || v === CFB_END) break;
+    fatSects.push(v);
+  }
+  let ds = difStart, guard = 0;
+  while (ds !== CFB_END && ds !== CFB_FREE && fatSects.length < nFat) {
+    if (ds >= nSec || guard++ > 100000) throw DCErr('섹터 목록(DIFAT)이 손상됐습니다', 'CORRUPT');
+    const b = secOff(ds), per = ssz / 4 - 1;
+    for (let i = 0; i < per && fatSects.length < nFat; i++) {
+      const v = u32le(u8, b + i * 4);
+      if (v !== CFB_FREE && v !== CFB_END) fatSects.push(v);
+    }
+    ds = u32le(u8, b + ssz - 4);
+  }
+  const per = ssz / 4;
+  const fat = new Uint32Array(fatSects.length * per);
+  let k = 0;
+  for (const fs of fatSects) {
+    if (fs >= nSec) throw DCErr('섹터 목록(FAT)이 손상됐습니다', 'CORRUPT');
+    const b = secOff(fs);
+    for (let i = 0; i < per; i++) fat[k++] = b + i * 4 + 4 <= u8.length ? u32le(u8, b + i * 4) : CFB_FREE;
+  }
+  const chain = (start, tbl, limit) => {
+    const out = [];
+    let s = start;
+    while (s !== CFB_END && s !== CFB_FREE) {
+      if (s >= tbl.length || out.length > limit) throw DCErr('섹터 사슬이 손상됐습니다', 'CORRUPT');
+      out.push(s); s = tbl[s];
+    }
+    return out;
+  };
+  const readChain = (start, size) => {
+    const need = size == null ? Infinity : Math.ceil(size / ssz);
+    const secs = chain(start, fat, Math.min(fat.length, need === Infinity ? fat.length : need + 2));
+    if (size != null && secs.length < need) throw DCErr('스트림이 잘렸습니다', 'CORRUPT');
+    const len = size == null ? secs.length * ssz : size;
+    const buf = new Uint8Array(len);
+    let o = 0;
+    for (const sec of secs) {
+      if (o >= len) break;
+      const so = secOff(sec);
+      if (so >= u8.length) throw DCErr('섹터가 파일 밖을 가리킵니다', 'CORRUPT');
+      const take = Math.min(ssz, len - o, u8.length - so);
+      buf.set(u8.subarray(so, so + take), o);
+      o += take;
+    }
+    return buf;
+  };
+  const dirBuf = readChain(dirStart);
+  const ents = [];
+  for (let p = 0; p + 128 <= dirBuf.length; p += 128) {
+    const nlen = u16le(dirBuf, p + 0x40);
+    const e = {
+      idx: ents.length, raw: dirBuf.slice(p, p + 128), type: dirBuf[p + 0x42],
+      left: u32le(dirBuf, p + 0x44), right: u32le(dirBuf, p + 0x48), child: u32le(dirBuf, p + 0x4C),
+      start: u32le(dirBuf, p + 0x74), size: u32le(dirBuf, p + 0x78)
+    };
+    e.name = nlen >= 2 && nlen <= 64 ? TD16.decode(dirBuf.subarray(p, p + nlen - 2)) : '';
+    if (ssz === 512) e.size = e.size >>> 0;                   /* v3 는 위 32비트를 쓰지 않는다 */
+    ents.push(e);
+  }
+  if (!ents.length || ents[0].type !== 5) throw DCErr('루트 항목이 없습니다', 'CORRUPT');
+  const root = ents[0];
+  let miniFat = new Uint32Array(0), miniStream = new Uint8Array(0);
+  if (root.size) {
+    const mb = readChain(miniFatStart);
+    miniFat = new Uint32Array(mb.buffer, mb.byteOffset, mb.length >> 2);
+    miniStream = readChain(root.start, root.size);
+  }
+  const readMini = (start, size) => {
+    const need = Math.ceil(size / mssz);
+    const secs = chain(start, miniFat, need + 2);
+    if (secs.length < need) throw DCErr('작은 스트림이 잘렸습니다', 'CORRUPT');
+    const buf = new Uint8Array(size);
+    let o = 0;
+    for (const sec of secs) {
+      if (o >= size) break;
+      const so = sec * mssz;
+      if (so >= miniStream.length) throw DCErr('작은 섹터가 범위를 벗어납니다', 'CORRUPT');
+      const take = Math.min(mssz, size - o);
+      buf.set(miniStream.subarray(so, so + take), o);
+      o += take;
+    }
+    return buf;
+  };
+  /* 트리를 걸어 'BinData/BIN0001.jpg' 같은 경로를 만든다 */
+  const paths = new Map();
+  const seen = new Uint8Array(ents.length);
+  const walk = (idx, prefix, depth) => {
+    const stack = [idx];
+    while (stack.length) {
+      const i = stack.pop();
+      if (i === CFB_FREE || i >= ents.length || seen[i]) continue;
+      seen[i] = 1;
+      const e = ents[i];
+      const full = prefix ? prefix + '/' + e.name : e.name;
+      e.path = full;
+      if (e.type === 2) paths.set(full, i);
+      else if (e.type === 1 && depth < 16) walk(e.child, full, depth + 1);
+      stack.push(e.left, e.right);
+    }
+  };
+  walk(root.child, '', 0);
+  return {
+    ssz, ents, paths, header: u8.subarray(0, 512),
+    has: p => paths.has(p),
+    find(p) {                                               /* 대소문자를 가리지 않고 찾기 */
+      if (paths.has(p)) return paths.get(p);
+      const lp = p.toLowerCase();
+      for (const [k, v] of paths) if (k.toLowerCase() === lp) return v;
+      return -1;
+    },
+    read(idx) {
+      if (typeof idx === 'string') idx = this.find(idx);
+      const e = ents[idx];
+      if (!e || e.type !== 2) return null;
+      if (!e.size) return new Uint8Array(0);
+      return e.size < miniCut ? readMini(e.start, e.size) : readChain(e.start, e.size);
+    }
+  };
+}
+
+/* repl: Map(항목 번호 → 새 바이트), rename: Map(항목 번호 → 새 이름 — 길이가 같아야 트리 순서가 그대로다) */
+function cfbWrite(cf, repl, rename) {
+  const SEC = 512, MINI = 64, CUT = 4096, PER = SEC / 4;
+  const ents = cf.ents;
+  const data = new Map();
+  for (const e of ents) if (e.type === 2) data.set(e.idx, repl && repl.has(e.idx) ? repl.get(e.idx) : cf.read(e.idx));
+  /* 1) 작은 스트림 → 미니 스트림 + 미니 FAT */
+  const minis = [], bigs = [];
+  for (const e of ents) {
+    if (e.type !== 2) continue;
+    const d = data.get(e.idx);
+    if (!d.length) continue;
+    (d.length < CUT ? minis : bigs).push(e.idx);
+  }
+  let miniLen = 0;
+  for (const i of minis) miniLen += Math.ceil(data.get(i).length / MINI) * MINI;
+  const miniBlob = new Uint8Array(miniLen);
+  const miniFat = [];
+  const start = new Map(), size = new Map();
+  {
+    let mp = 0;
+    for (const i of minis) {
+      const d = data.get(i), ns = Math.ceil(d.length / MINI), s0 = mp / MINI;
+      miniBlob.set(d, mp);
+      for (let k = 0; k < ns; k++) miniFat.push(k < ns - 1 ? s0 + k + 1 : CFB_END);
+      start.set(i, s0); size.set(i, d.length);
+      mp += ns * MINI;
+    }
+  }
+  /* 2) 큰 스트림·미니 스트림·미니 FAT·디렉터리를 섹터에 차례로 */
+  const chunks = [], fat = [];
+  let cur = 0;
+  const place = bytes => {
+    const ns = Math.ceil(bytes.length / SEC);
+    if (!ns) return CFB_END;
+    const s0 = cur;
+    for (let k = 0; k < ns; k++) fat.push(k < ns - 1 ? s0 + k + 1 : CFB_END);
+    chunks.push(bytes);
+    cur += ns;
+    return s0;
+  };
+  for (const i of bigs) { const d = data.get(i); start.set(i, place(d)); size.set(i, d.length); }
+  const miniStart = place(miniBlob);
+  const mfBytes = new Uint8Array(Math.ceil(miniFat.length * 4 / SEC) * SEC).fill(0xFF);
+  for (let k = 0; k < miniFat.length; k++) put32(mfBytes, k * 4, miniFat[k]);
+  const mfStart = miniFat.length ? place(mfBytes) : CFB_END;
+  let dirCount = ents.length;
+  while (dirCount % 4) dirCount++;
+  const dir = new Uint8Array(dirCount * 128);
+  for (let k = 0; k < dirCount; k++) {
+    const p = k * 128;
+    if (k >= ents.length) { put32(dir, p + 0x44, CFB_FREE); put32(dir, p + 0x48, CFB_FREE); put32(dir, p + 0x4C, CFB_FREE); continue; }
+    const e = ents[k];
+    dir.set(e.raw, p);
+    if (rename && rename.has(k)) {
+      const nm = rename.get(k);
+      dir.fill(0, p, p + 64);
+      for (let c = 0; c < nm.length && c < 31; c++) put16(dir, p + c * 2, nm.charCodeAt(c));
+      put16(dir, p + 0x40, (Math.min(31, nm.length) + 1) * 2);
+    }
+    if (e.type === 5) {
+      put32(dir, p + 0x74, miniLen ? miniStart : CFB_END); put32(dir, p + 0x78, miniLen); put32(dir, p + 0x7C, 0);
+    } else if (e.type === 2) {
+      const sz = size.get(k) || 0;
+      put32(dir, p + 0x74, sz ? start.get(k) : CFB_END); put32(dir, p + 0x78, sz); put32(dir, p + 0x7C, 0);
+    } else if (e.type === 1) {
+      put32(dir, p + 0x74, 0); put32(dir, p + 0x78, 0); put32(dir, p + 0x7C, 0);
+    }
+  }
+  const dirStart = place(dir);
+  /* 3) FAT·DIFAT 섹터 수를 맞춘다(자기 자신도 섹터를 먹으므로 되풀이해 수렴) */
+  const content = cur;
+  let F = 1, D = 0;
+  for (;;) {
+    D = F > 109 ? Math.ceil((F - 109) / (PER - 1)) : 0;
+    const need = Math.ceil((content + F + D) / PER);
+    if (need <= F) break;
+    F = need;
+  }
+  const fatStart = content, difStart = content + F, total = content + F + D;
+  const FAT = new Uint32Array(F * PER).fill(CFB_FREE);
+  for (let k = 0; k < fat.length; k++) FAT[k] = fat[k];
+  for (let k = 0; k < F; k++) FAT[fatStart + k] = CFB_FATSECT;
+  for (let k = 0; k < D; k++) FAT[difStart + k] = CFB_DIFSECT;
+  /* 4) 머리 */
+  const hdr = new Uint8Array(SEC);
+  hdr.set(CFB_SIG, 0);
+  hdr.set(cf.header.subarray(8, 24), 8);                    /* 머리 CLSID(보통 0) 그대로 */
+  put16(hdr, 24, 0x3E); put16(hdr, 26, 3); put16(hdr, 28, 0xFFFE); put16(hdr, 30, 9); put16(hdr, 32, 6);
+  put32(hdr, 44, F); put32(hdr, 48, dirStart); put32(hdr, 52, 0); put32(hdr, 56, CUT);
+  put32(hdr, 60, mfStart); put32(hdr, 64, miniFat.length ? mfBytes.length / SEC : 0);
+  put32(hdr, 68, D ? difStart : CFB_END); put32(hdr, 72, D);
+  for (let k = 0; k < 109; k++) put32(hdr, 76 + k * 4, k < F ? fatStart + k : CFB_FREE);
+  /* 5) 하나로 */
+  const out = new Uint8Array(SEC + total * SEC);
+  out.set(hdr, 0);
+  let o = SEC;
+  for (const c of chunks) { out.set(c, o); o += Math.ceil(c.length / SEC) * SEC; }
+  for (let k = 0; k < FAT.length; k++) put32(out, SEC + fatStart * SEC + k * 4, FAT[k]);
+  if (D) {
+    let idx = 109;
+    for (let s = 0; s < D; s++) {
+      const b = SEC + (difStart + s) * SEC;
+      for (let k = 0; k < PER - 1; k++) { put32(out, b + k * 4, idx < F ? fatStart + idx : CFB_FREE); idx++; }
+      put32(out, b + (PER - 1) * 4, s < D - 1 ? difStart + s + 1 : CFB_END);
+    }
+  }
+  return out;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   사진 한 장 다루기 — 형식 알아보기 · 크기 읽기 · 줄여서 다시 굽기
+   · 한글·오피스는 JPEG 의 EXIF 방향값을 무시하고 픽셀 그대로 그린다(한글 PDF 로 확인).
+     그래서 풀 때는 방향값을 1 로 바꿔 「픽셀 그대로」 풀고, 구운 뒤 원래 방향값을 다시 넣는다.
+     방향을 따르는 프로그램이든 무시하는 프로그램이든 원본과 똑같이 보인다.
+   · 투명한 부분이 있으면 PNG 로 둔다(JPEG 로 바꾸면 배경이 검게·희게 찬다).
+   · 화면 캡처·도표처럼 평평한 그림은 PNG 로, 사진은 JPEG 로.
+   ════════════════════════════════════════════════════════════════════ */
+const MIME = { jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', bmp: 'image/bmp', webp: 'image/webp', tiff: 'image/tiff' };
+
+function sniffImg(u8) {
+  if (!u8 || u8.length < 12) return null;
+  const b = u8;
+  if (b[0] === 0xFF && b[1] === 0xD8 && b[2] === 0xFF) return 'jpeg';
+  if (b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4E && b[3] === 0x47) return 'png';
+  if (b[0] === 0x47 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x38) return 'gif';
+  if (b[0] === 0x42 && b[1] === 0x4D) return 'bmp';
+  if (b[0] === 0x52 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x46 && b[8] === 0x57 && b[9] === 0x45 && b[10] === 0x42 && b[11] === 0x50) return 'webp';
+  if (b[0] === 0x49 && b[1] === 0x49 && b[2] === 0xBC) return 'wdp';
+  if ((b[0] === 0x49 && b[1] === 0x49 && b[2] === 0x2A && b[3] === 0) || (b[0] === 0x4D && b[1] === 0x4D && b[2] === 0 && b[3] === 0x2A)) return 'tiff';
+  if (b[0] === 1 && b[1] === 0 && b[2] === 0 && b[3] === 0 && b.length > 44 && b[40] === 0x20 && b[41] === 0x45 && b[42] === 0x4D && b[43] === 0x46) return 'emf';
+  if ((b[0] === 0xD7 && b[1] === 0xCD && b[2] === 0xC6 && b[3] === 0x9A) || ((b[0] === 1 || b[0] === 2) && b[1] === 0 && b[2] === 9 && b[3] === 0)) return 'wmf';
+  const head = TD8.decode(b.subarray(0, Math.min(256, b.length))).trim().toLowerCase();
+  if (head.startsWith('<svg') || (head.startsWith('<?xml') && head.indexOf('<svg') > 0)) return 'svg';
+  return null;
+}
+
+function jpegInfo(u8) {
+  const r = { fmt: 'jpeg', w: 0, h: 0, comps: 3, orient: 1, orientOff: -1, orientLE: true, adobe: false };
+  let p = 2;
+  const n = u8.length;
+  while (p + 4 <= n) {
+    if (u8[p] !== 0xFF) { p++; continue; }
+    const m = u8[p + 1];
+    if (m === 0xFF) { p++; continue; }
+    if (m === 0xD8 || m === 0x01 || (m >= 0xD0 && m <= 0xD7)) { p += 2; continue; }
+    if (m === 0xD9 || m === 0xDA) break;
+    const len = (u8[p + 2] << 8) | u8[p + 3];
+    const s = p + 4;
+    if (len < 2) break;
+    if (m >= 0xC0 && m <= 0xCF && m !== 0xC4 && m !== 0xC8 && m !== 0xCC) {
+      r.h = (u8[s + 1] << 8) | u8[s + 2]; r.w = (u8[s + 3] << 8) | u8[s + 4]; r.comps = u8[s + 5];
+      r.sof = m;
+    } else if (m === 0xE1 && len > 16 && u8[s] === 0x45 && u8[s + 1] === 0x78 && u8[s + 2] === 0x69 && u8[s + 3] === 0x66) {
+      const t = s + 6, le = u8[t] === 0x49;
+      const g16 = o => le ? u16le(u8, o) : (u8[o] << 8) | u8[o + 1];
+      const g32 = o => le ? u32le(u8, o) : ((u8[o] << 24) | (u8[o + 1] << 16) | (u8[o + 2] << 8) | u8[o + 3]) >>> 0;
+      const ifd = t + g32(t + 4);
+      if (ifd + 2 <= s + len - 2) {
+        const cnt = g16(ifd);
+        for (let k = 0; k < cnt && ifd + 2 + k * 12 + 12 <= s + len - 2; k++) {
+          const q = ifd + 2 + k * 12;
+          if (g16(q) === 0x0112) { r.orient = g16(q + 8) || 1; r.orientOff = q + 8; r.orientLE = le; break; }
+        }
+      }
+    } else if (m === 0xEE && len >= 14 && u8[s] === 0x41 && u8[s + 1] === 0x64 && u8[s + 2] === 0x6F && u8[s + 3] === 0x62 && u8[s + 4] === 0x65) {
+      r.adobe = true;
+    }
+    p = s + len - 2;
+  }
+  return r;
+}
+function pngInfo(u8) {
+  const r = { fmt: 'png', w: 0, h: 0, alphaDecl: false, anim: false, color: 0, depth: 8 };
+  if (u8.length < 33) return r;
+  r.w = ((u8[16] << 24) | (u8[17] << 16) | (u8[18] << 8) | u8[19]) >>> 0;
+  r.h = ((u8[20] << 24) | (u8[21] << 16) | (u8[22] << 8) | u8[23]) >>> 0;
+  r.depth = u8[24]; r.color = u8[25];
+  r.alphaDecl = r.color === 4 || r.color === 6;
+  let p = 8;
+  while (p + 12 <= u8.length) {
+    const len = ((u8[p] << 24) | (u8[p + 1] << 16) | (u8[p + 2] << 8) | u8[p + 3]) >>> 0;
+    const ty = String.fromCharCode(u8[p + 4], u8[p + 5], u8[p + 6], u8[p + 7]);
+    if (ty === 'tRNS') r.alphaDecl = true;
+    if (ty === 'acTL') r.anim = true;
+    if (ty === 'IDAT' || ty === 'IEND') break;
+    p += 12 + len;
+  }
+  return r;
+}
+function gifInfo(u8) {
+  const r = { fmt: 'gif', w: u16le(u8, 6), h: u16le(u8, 8), frames: 0, alphaDecl: false, anim: false };
+  let p = 13;
+  const f = u8[10];
+  if (f & 0x80) p += 3 * (1 << ((f & 7) + 1));
+  const n = u8.length;
+  let guard = 0;
+  while (p < n && guard++ < 100000) {
+    const b = u8[p];
+    if (b === 0x3B) break;
+    if (b === 0x21) {
+      if (u8[p + 1] === 0xF9 && (u8[p + 3] & 1)) r.alphaDecl = true;
+      p += 2;
+      while (p < n && u8[p]) p += u8[p] + 1;
+      p++;
+    } else if (b === 0x2C) {
+      r.frames++;
+      const lf = u8[p + 9];
+      p += 10;
+      if (lf & 0x80) p += 3 * (1 << ((lf & 7) + 1));
+      p++;
+      while (p < n && u8[p]) p += u8[p] + 1;
+      p++;
+    } else break;
+    if (r.frames > 1) break;
+  }
+  r.anim = r.frames > 1;
+  return r;
+}
+function bmpInfo(u8) {
+  const r = { fmt: 'bmp', w: Math.abs(i32le(u8, 18)), h: Math.abs(i32le(u8, 22)), bpp: u16le(u8, 28), alphaDecl: false };
+  r.alphaDecl = r.bpp === 32;
+  return r;
+}
+function webpInfo(u8) {
+  const r = { fmt: 'webp', w: 0, h: 0, alphaDecl: true, anim: false };
+  let p = 12;
+  while (p + 8 <= u8.length) {
+    const ty = String.fromCharCode(u8[p], u8[p + 1], u8[p + 2], u8[p + 3]), len = u32le(u8, p + 4);
+    if (ty === 'ANIM' || ty === 'ANMF') r.anim = true;
+    if (ty === 'VP8X') { r.w = 1 + (u8[p + 12] | (u8[p + 13] << 8) | (u8[p + 14] << 16)); r.h = 1 + (u8[p + 15] | (u8[p + 16] << 8) | (u8[p + 17] << 16)); }
+    else if (ty === 'VP8 ' && !r.w) { r.w = u16le(u8, p + 14) & 0x3FFF; r.h = u16le(u8, p + 16) & 0x3FFF; r.alphaDecl = false; }
+    else if (ty === 'VP8L' && !r.w) { const b = u32le(u8, p + 9); r.w = (b & 0x3FFF) + 1; r.h = ((b >>> 14) & 0x3FFF) + 1; }
+    p += 8 + len + (len & 1);
+  }
+  return r;
+}
+/* 줄일 수 있는 그림인지와 그 크기 */
+function imgInfo(u8) {
+  const fmt = sniffImg(u8);
+  if (fmt === 'jpeg') return jpegInfo(u8);
+  if (fmt === 'png') return pngInfo(u8);
+  if (fmt === 'gif') return gifInfo(u8);
+  if (fmt === 'bmp') return bmpInfo(u8);
+  if (fmt === 'webp') return webpInfo(u8);
+  return { fmt: fmt || 'unknown', w: 0, h: 0 };
+}
+/* 이 그림을 건드리지 않는 이유(없으면 null) */
+function skipReason(info) {
+  switch (info.fmt) {
+    case 'jpeg': return info.comps === 4 ? '인쇄용 CMYK 사진' : (!info.w || !info.h ? '크기를 읽지 못함' : null);
+    case 'png': return info.anim ? '움직이는 PNG' : (info.w ? null : '크기를 읽지 못함');
+    case 'gif': return info.anim ? '움직이는 GIF' : null;
+    case 'bmp': return info.w ? null : '크기를 읽지 못함';
+    case 'webp': return info.anim ? '움직이는 WebP' : null;
+    case 'emf': case 'wmf': case 'svg': return '도형 그림(벡터)';
+    case 'tiff': return 'TIFF(브라우저가 못 여는 형식)';
+    case 'wdp': return '효과 원본(HD Photo)';
+    default: return '알 수 없는 형식';
+  }
+}
+
+/* ── 캔버스 ── */
+function mkCanvas(w, h) {
+  if (typeof OffscreenCanvas !== 'undefined') {
+    try { const c = new OffscreenCanvas(w, h); if (c.getContext('2d')) return c; } catch (e) { /* 아래로 */ }
+  }
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  return c;
+}
+async function canvasBytes(cv, type, q) {
+  let blob = null;
+  if (cv.convertToBlob) { try { blob = await cv.convertToBlob({ type, quality: q }); } catch (e) { blob = null; } }
+  if (!blob && cv.toBlob) blob = await new Promise(res => cv.toBlob(b => res(b), type, q));
+  if (!blob) throw new Error('이미지를 굽지 못했습니다');
+  if (blob.type && blob.type !== type) throw new Error('이 브라우저는 ' + type + ' 저장을 못 합니다');
+  return new Uint8Array(await blob.arrayBuffer());
+}
+/* EXIF 방향값을 1(그대로)로 바꾼 사본 — 브라우저가 방향대로 돌려 풀지 않게 */
+function neutralOrient(u8, info) {
+  if (info.fmt !== 'jpeg' || info.orientOff < 0 || info.orient === 1) return u8;
+  const c = u8.slice();
+  if (info.orientLE) { c[info.orientOff] = 1; c[info.orientOff + 1] = 0; } else { c[info.orientOff] = 0; c[info.orientOff + 1] = 1; }
+  return c;
+}
+/* 목표 크기로 풀기. createImageBitmap 의 크기 지정(해독하며 줄이기)을 먼저 쓰고,
+   안 되면 통째로 풀어 반씩 줄여 간다(한 번에 크게 줄이면 계단이 생긴다) */
+async function decodeAt(u8, info, w, h) {
+  const blob = new Blob([neutralOrient(u8, info)], { type: MIME[info.fmt] || 'application/octet-stream' });
+  if (w && h && (w < info.w || h < info.h)) {
+    try {
+      const bm = await createImageBitmap(blob, { resizeWidth: w, resizeHeight: h, resizeQuality: 'high' });
+      if (bm.width === w && bm.height === h) return { src: bm, w, h, close: () => bm.close() };
+      bm.close();
+    } catch (e) { /* 아래로 */ }
+  }
+  let full;
+  try { full = await createImageBitmap(blob); }
+  catch (e) {
+    /* 사파리 옛 판 등: <img> 로 푼다 */
+    full = await new Promise((res, rej) => {
+      const url = URL.createObjectURL(blob), im = new Image();
+      im.onload = () => { URL.revokeObjectURL(url); res(im); };
+      im.onerror = () => { URL.revokeObjectURL(url); rej(new Error('그림을 열지 못했습니다')); };
+      im.src = url;
+    });
+  }
+  const fw = full.naturalWidth || full.width, fh = full.naturalHeight || full.height;
+  if (!w || !h || (w === fw && h === fh)) return { src: full, w: fw, h: fh, close: () => full.close && full.close() };
+  let src = full, sw = fw, sh = fh;
+  while (sw / 2 >= w && sh / 2 >= h) {
+    const nw = Math.max(w, Math.round(sw / 2)), nh = Math.max(h, Math.round(sh / 2));
+    const cv = mkCanvas(nw, nh), cx = cv.getContext('2d');
+    cx.imageSmoothingEnabled = true; cx.imageSmoothingQuality = 'high';
+    cx.drawImage(src, 0, 0, nw, nh);
+    if (src !== full) src.width = 0;
+    src = cv; sw = nw; sh = nh;
+  }
+  const cv = mkCanvas(w, h), cx = cv.getContext('2d');
+  cx.imageSmoothingEnabled = true; cx.imageSmoothingQuality = 'high';
+  cx.drawImage(src, 0, 0, w, h);
+  if (full.close) full.close();
+  return { src: cv, w, h, close: () => { cv.width = 0; } };
+}
+/* 투명한 칸·평평함(같은 색이 이어지는 비율)·색 수 — 사진인지 그림인지 가른다 */
+function pixelStats(data, w, h) {
+  let alpha = false, flat = 0, tot = 0;
+  const seen = new Set();
+  const step = Math.max(1, Math.floor((w * h) / 400000));
+  for (let i = 3; i < data.length; i += 4) if (data[i] < 255) { alpha = true; break; }
+  for (let y = 0; y < h; y += step) {
+    const row = y * w * 4;
+    for (let x = 1; x < w; x++) {
+      const i = row + x * 4;
+      tot++;
+      if (data[i] === data[i - 4] && data[i + 1] === data[i - 3] && data[i + 2] === data[i - 2]) flat++;
+      if (seen.size < 6000 && !(x & 3)) seen.add(((data[i] >> 3) << 10) | ((data[i + 1] >> 3) << 5) | (data[i + 2] >> 3));
+    }
+  }
+  return { alpha, flat: tot ? flat / tot : 1, colors: seen.size };
+}
+/* JPEG 에 EXIF 방향값만 든 APP1 을 끼워 넣는다(JFIF APP0 뒤) */
+function withOrient(jpg, o) {
+  if (!o || o === 1) return jpg;
+  const tiff = [0x49, 0x49, 0x2A, 0x00, 8, 0, 0, 0, 1, 0, 0x12, 0x01, 3, 0, 1, 0, 0, 0, o & 255, 0, 0, 0, 0, 0, 0, 0];
+  const body = [0x45, 0x78, 0x69, 0x66, 0, 0].concat(tiff);
+  const len = body.length + 2;
+  const seg = new Uint8Array([0xFF, 0xE1, len >> 8, len & 255].concat(body));
+  let p = 2;
+  if (jpg[2] === 0xFF && jpg[3] === 0xE0) p = 4 + ((jpg[4] << 8) | jpg[5]);
+  const out = new Uint8Array(jpg.length + seg.length);
+  out.set(jpg.subarray(0, p), 0); out.set(seg, p); out.set(jpg.subarray(p), p + seg.length);
+  return out;
+}
+
+/* 한 장 굽기 — plan: { w, h, q, png:'auto'|'keep' }  → { bytes, fmt, w, h, thumb } 또는 null(그대로 두는 편이 낫다) */
+async function encodeImage(u8, info, plan, want) {
+  const dec = await decodeAt(u8, info, plan.w, plan.h);
+  try {
+    const w = dec.w, h = dec.h;
+    const cv = mkCanvas(w, h);
+    const cx = cv.getContext('2d', { willReadFrequently: info.fmt !== 'jpeg' });
+    let fmt = 'jpeg', px = null;
+    if (info.fmt !== 'jpeg') {
+      cx.clearRect(0, 0, w, h);
+      cx.drawImage(dec.src, 0, 0, w, h);
+      px = cx.getImageData(0, 0, w, h).data;
+      const st = pixelStats(px, w, h);
+      /* 투명 → PNG. 화면 캡처·도표(같은 색이 길게 이어짐, 색이 적음) → PNG. 나머지(사진) → JPEG */
+      if (st.alpha || st.flat > 0.55 || st.colors < 300 || !want.toJpeg) fmt = 'png';
+      if (fmt === 'jpeg') {
+        /* 투명이 없는 그림이라도 캔버스 바탕을 흰색으로 깔고 다시 그린다 */
+        cx.globalCompositeOperation = 'destination-over';
+        cx.fillStyle = '#ffffff'; cx.fillRect(0, 0, w, h);
+        cx.globalCompositeOperation = 'source-over';
+      }
+    } else {
+      cx.fillStyle = '#ffffff'; cx.fillRect(0, 0, w, h);
+      cx.drawImage(dec.src, 0, 0, w, h);
+    }
+    let bytes = await canvasBytes(cv, fmt === 'png' ? 'image/png' : 'image/jpeg', plan.q);
+    if (fmt === 'jpeg' && info.fmt === 'jpeg') bytes = withOrient(bytes, info.orient);
+    /* PNG 로 둘 그림은 팔레트로 한 번 더 — 색이 256가지 이하면 손실 없이, 아니면(선택 시) 256색으로 */
+    let pal = null, exact = null;
+    if (fmt === 'png' && px && typeof CompressionStream !== 'undefined') {
+      const n = w * h;
+      let q = exactPalette(px, n);
+      exact = !!q;
+      let lossy = false;
+      if (!q && want.quant && n <= 16000000) {
+        q = quantize256(px, n); lossy = true;
+        if (q.mean > Q_MEAN || q.p995 > Q_P995) q = null;
+      }
+      if (q) {
+        try {
+          const b8 = await encodePng8(q.pal, q.idx, w, h);
+          if (b8.length < bytes.length) { bytes = b8; pal = lossy ? 'lossy' : 'exact'; }
+        } catch (e) { /* 24비트 PNG 그대로 */ }
+      }
+    }
+    let thumb = null;
+    if (want.thumb) thumb = await makeThumb(cv, w, h);
+    cv.width = 0;
+    return { bytes, fmt, w, h, thumb, pal, exact };
+  } finally { dec.close(); }
+}
+/* ════════════════════════════════════════════════════════════════════
+   팔레트 PNG(256색 이하) — 화면 캡처·도표 그림용
+   · 색이 256가지 이하면 그대로 옮겨 담아 화질 손실이 없다(24/32비트 → 8비트 이하)
+   · 그보다 많으면(선택했을 때만) 중앙값 자르기로 256색을 뽑는다. 원본과의 차이를 재서
+     평균 오차·상위 0.5% 오차가 기준을 넘으면 버린다 — 눈에 띄게 달라지는 그림은 건너뛴다
+   ════════════════════════════════════════════════════════════════════ */
+function exactPalette(d, n) {
+  const map = new Map();
+  const idx = new Uint8Array(n);
+  let last = -1, lastI = 0;
+  for (let p = 0, i = 0; i < n; i++, p += 4) {
+    const a = d[p + 3];
+    const key = a === 0 ? 0 : (((d[p] << 24) | (d[p + 1] << 16) | (d[p + 2] << 8) | a) >>> 0) || 1;
+    if (key === last) { idx[i] = lastI; continue; }
+    let k = map.get(key);
+    if (k === undefined) {
+      if (map.size >= 256) return null;
+      k = map.size; map.set(key, k);
+    }
+    idx[i] = k; last = key; lastI = k;
+  }
+  const pal = new Array(map.size);
+  for (const [key, k] of map) pal[k] = key === 0 ? [0, 0, 0, 0] : [key >>> 24, (key >>> 16) & 255, (key >>> 8) & 255, key & 255];
+  return { pal, idx };
+}
+function quantize256(d, n) {
+  /* 넓게 칠해진 바탕색은 정확한 색으로 먼저 팔레트에 넣는다 — 평균으로 뭉개면 흰 바탕이 누렇게 돈다 */
+  const freq = new Map();
+  let trans = 0;
+  for (let p = 0; p < n * 4; p += 4) {
+    const a = d[p + 3];
+    if (a === 0) { trans++; continue; }
+    const key = ((d[p] << 24) | (d[p + 1] << 16) | (d[p + 2] << 8) | a) >>> 0;
+    const v = freq.get(key);
+    if (v !== undefined) freq.set(key, v + 1);
+    else if (freq.size < 300000) freq.set(key, 1);
+  }
+  const fixed = [...freq.entries()].filter(e => e[1] >= n * 0.004).sort((x, y) => y[1] - x[1]).slice(0, 32).map(e => e[0]);
+  const fixedSet = new Set(fixed);
+  /* 나머지 색의 히스토그램: RGB 5비트 + 알파 3비트 = 18비트 칸 */
+  const NB = 1 << 18;
+  const cnt = new Uint32Array(NB), sr = new Float64Array(NB), sg = new Float64Array(NB), sb = new Float64Array(NB), sa = new Float64Array(NB);
+  for (let p = 0; p < n * 4; p += 4) {
+    const a = d[p + 3];
+    if (a === 0) continue;
+    if (fixedSet.size && fixedSet.has(((d[p] << 24) | (d[p + 1] << 16) | (d[p + 2] << 8) | a) >>> 0)) continue;
+    const k = ((d[p] >> 3) << 13) | ((d[p + 1] >> 3) << 8) | ((d[p + 2] >> 3) << 3) | (a >> 5);
+    cnt[k]++; sr[k] += d[p]; sg[k] += d[p + 1]; sb[k] += d[p + 2]; sa[k] += a;
+  }
+  const bins = [];
+  for (let k = 0; k < NB; k++) if (cnt[k]) bins.push(k);
+  const want = 256 - (trans ? 1 : 0) - fixed.length;
+  const ax = (k, c) => c === 0 ? (k >> 13) & 31 : c === 1 ? (k >> 8) & 31 : c === 2 ? (k >> 3) & 31 : (k & 7) * 4;
+  const mkBox = arr => {
+    let w = 0;
+    const lo = [99, 99, 99, 99], hi = [-1, -1, -1, -1];
+    for (const k of arr) { w += cnt[k]; for (let c = 0; c < 4; c++) { const v = ax(k, c); if (v < lo[c]) lo[c] = v; if (v > hi[c]) hi[c] = v; } }
+    let best = 0, span = -1;
+    for (let c = 0; c < 4; c++) if (hi[c] - lo[c] > span) { span = hi[c] - lo[c]; best = c; }
+    return { arr, w, axis: best, span, score: span * Math.sqrt(w) };
+  };
+  let boxes = bins.length ? [mkBox(bins)] : [];
+  while (boxes.length && boxes.length < want) {
+    let bi = -1, bs = 0;
+    for (let i = 0; i < boxes.length; i++) if (boxes[i].span > 0 && boxes[i].arr.length > 1 && boxes[i].score > bs) { bs = boxes[i].score; bi = i; }
+    if (bi < 0) break;
+    const b = boxes[bi];
+    const c = b.axis;
+    b.arr.sort((x, y) => ax(x, c) - ax(y, c));
+    let acc = 0, cut = 0;
+    const half = b.w / 2;
+    for (let i = 0; i < b.arr.length; i++) { acc += cnt[b.arr[i]]; if (acc >= half) { cut = i; break; } }
+    cut = Math.max(1, Math.min(b.arr.length - 1, cut + 1));
+    boxes.splice(bi, 1, mkBox(b.arr.slice(0, cut)), mkBox(b.arr.slice(cut)));
+  }
+  const pal = [];
+  if (trans) pal.push([0, 0, 0, 0]);
+  for (const key of fixed) pal.push([key >>> 24, (key >>> 16) & 255, (key >>> 8) & 255, key & 255]);
+  for (const b of boxes) {
+    let w = 0, r = 0, g = 0, bl = 0, a = 0;
+    for (const k of b.arr) { w += cnt[k]; r += sr[k]; g += sg[k]; bl += sb[k]; a += sa[k]; }
+    pal.push([Math.round(r / w), Math.round(g / w), Math.round(bl / w), Math.round(a / w)]);
+  }
+  /* 가장 가까운 팔레트 색으로 — 같은 색은 한 번만 찾는다 */
+  const idx = new Uint8Array(n);
+  const cache = new Map();
+  const P = pal.length;
+  const pr = pal.map(c => c[0]), pg = pal.map(c => c[1]), pb = pal.map(c => c[2]), pa = pal.map(c => c[3]);
+  const start = trans ? 1 : 0;
+  let errSum = 0;
+  const errHist = new Uint32Array(1024);
+  for (let p = 0, i = 0; i < n; i++, p += 4) {
+    const a = d[p + 3];
+    if (a === 0) { idx[i] = 0; continue; }
+    const key = ((d[p] << 24) | (d[p + 1] << 16) | (d[p + 2] << 8) | a) >>> 0;
+    let k = cache.get(key);
+    if (k === undefined) {
+      let bd = Infinity; k = start;
+      const r = d[p], g = d[p + 1], b = d[p + 2];
+      for (let j = start; j < P; j++) {
+        const dr = r - pr[j], dg = g - pg[j], db = b - pb[j], da = a - pa[j];
+        const dd = dr * dr + dg * dg + db * db + 2 * da * da;
+        if (dd < bd) { bd = dd; k = j; }
+      }
+      cache.set(key, k);
+    }
+    idx[i] = k;
+    const e = (Math.abs(d[p] - pr[k]) + Math.abs(d[p + 1] - pg[k]) + Math.abs(d[p + 2] - pb[k])) * a / 255 + Math.abs(a - pa[k]);
+    errSum += e;
+    errHist[Math.min(1023, e | 0)]++;
+  }
+  /* 오차 — 평균과 상위 0.5% (한 픽셀 RGB 합 기준) */
+  const mean = errSum / Math.max(1, n - trans) / 3;
+  let acc = 0, p995 = 0;
+  const lim = (n - trans) * 0.995;
+  for (let e = 0; e < 1024; e++) { acc += errHist[e]; if (acc >= lim) { p995 = e / 3; break; } }
+  return { pal, idx, mean, p995 };
+}
+/* 팔레트 PNG 굽기 — 투명이 있는 색을 앞에 두어 tRNS 를 짧게 */
+async function encodePng8(pal, idx, w, h) {
+  const order = pal.map((c, i) => i).sort((x, y) => (pal[x][3] === 255) - (pal[y][3] === 255) || x - y);
+  const remap = new Uint8Array(pal.length);
+  order.forEach((o, i) => { remap[o] = i; });
+  const P = order.map(o => pal[o]);
+  const n = P.length;
+  const bd = n <= 2 ? 1 : n <= 4 ? 2 : n <= 16 ? 4 : 8;
+  const rowBytes = Math.ceil(w * bd / 8);
+  const raw = new Uint8Array((rowBytes + 1) * h);
+  for (let y = 0; y < h; y++) {
+    const o = y * (rowBytes + 1) + 1, s = y * w;
+    if (bd === 8) { for (let x = 0; x < w; x++) raw[o + x] = remap[idx[s + x]]; }
+    else {
+      const per = 8 / bd;
+      for (let x = 0; x < w; x++) raw[o + ((x / per) | 0)] |= remap[idx[s + x]] << (8 - bd * (x % per + 1));
+    }
+  }
+  const st = new Blob([raw]).stream().pipeThrough(new CompressionStream('deflate'));
+  const z = new Uint8Array(await new Response(st).arrayBuffer());
+  const chunk = (type, data) => {
+    const c = new Uint8Array(12 + data.length);
+    const dv = new DataView(c.buffer);
+    dv.setUint32(0, data.length);
+    for (let i = 0; i < 4; i++) c[4 + i] = type.charCodeAt(i);
+    c.set(data, 8);
+    dv.setUint32(8 + data.length, crc32(c.subarray(4, 8 + data.length)));
+    return c;
+  };
+  const ihdr = new Uint8Array(13);
+  const hv = new DataView(ihdr.buffer);
+  hv.setUint32(0, w); hv.setUint32(4, h); ihdr[8] = bd; ihdr[9] = 3;
+  const plte = new Uint8Array(n * 3);
+  P.forEach((c, i) => { plte[i * 3] = c[0]; plte[i * 3 + 1] = c[1]; plte[i * 3 + 2] = c[2]; });
+  let lastT = -1;
+  P.forEach((c, i) => { if (c[3] < 255) lastT = i; });
+  const parts = [new Uint8Array([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]), chunk('IHDR', ihdr), chunk('PLTE', plte)];
+  if (lastT >= 0) parts.push(chunk('tRNS', new Uint8Array(P.slice(0, lastT + 1).map(c => c[3]))));
+  parts.push(chunk('IDAT', z), chunk('IEND', new Uint8Array(0)));
+  return concatU8(parts);
+}
+const Q_MEAN = 1.6, Q_P995 = 26;     /* 256색으로 줄였을 때 받아 줄 차이(0~255, 채널 평균) */
+
+/* 목록에 보일 작은 그림(가로세로 긴 변 112px) */
+async function makeThumb(src, w, h) {
+  const k = Math.min(1, 112 / Math.max(w, h));
+  const tw = Math.max(1, Math.round(w * k)), th = Math.max(1, Math.round(h * k));
+  const cv = mkCanvas(tw, th), cx = cv.getContext('2d');
+  cx.imageSmoothingEnabled = true; cx.imageSmoothingQuality = 'high';
+  cx.drawImage(src, 0, 0, tw, th);
+  const b = await canvasBytes(cv, 'image/png');
+  return URL.createObjectURL(new Blob([b], { type: 'image/png' }));
+}
+async function thumbOf(u8, info) {
+  const k = Math.min(1, 112 / Math.max(info.w || 1, info.h || 1));
+  const dec = await decodeAt(u8, info, Math.max(1, Math.round((info.w || 112) * k)), Math.max(1, Math.round((info.h || 112) * k)));
+  try { return await makeThumb(dec.src, dec.w, dec.h); } finally { dec.close(); }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   HWP 5.x (한글 바이너리)
+   FileHeader · DocInfo(BIN_DATA 목록) · BodyText/SectionN(그림 개체) · BinData/BINxxxx.ext
+   레코드 머리 32비트 = 태그(10) · 깊이(10) · 크기(12, 0xFFF 면 다음 4바이트)
+   · 사진이 문서에서 차지하는 크기 = 그리기 개체(gso) 머리의 폭·높이(HWPUNIT, 1/7200인치)
+   · 자르기 값은 원본 픽셀×75 단위라, 사진을 줄이면 자르기·원본 크기 값도 같은 비율로 줄인다
+   ════════════════════════════════════════════════════════════════════ */
+const H5 = { BIN_DATA: 18, BORDER_FILL: 20, CTRL_HEADER: 71, SHAPE_COMPONENT: 76, SC_OLE: 84, SC_PICTURE: 85, SC_CONTAINER: 86 };
+
+function hwpRecs(u8) {
+  const out = [];
+  let i = 0;
+  const n = u8.length;
+  while (i + 4 <= n) {
+    const h = u32le(u8, i); i += 4;
+    const tag = h & 0x3FF, lvl = (h >>> 10) & 0x3FF;
+    let size = h >>> 20;
+    if (size === 0xFFF) { if (i + 4 > n) break; size = u32le(u8, i); i += 4; }
+    if (i + size > n) { out.bad = true; break; }
+    out.push({ tag, lvl, off: i, end: i + size });
+    i += size;
+  }
+  return out;
+}
+function ctrlIdAt(u8, o) { return String.fromCharCode(u8[o + 3], u8[o + 2], u8[o + 1], u8[o]); }
+
+/* 채우기 정보에서 그림 번호만 꺼낸다(표 배경·쪽 배경·도형 채우기) */
+function fillBin5(u8, p, end) {
+  if (p + 4 > end) return 0;
+  const type = u32le(u8, p); p += 4;
+  if (type & 1) p += 12;
+  if (type & 4) {
+    if (p + 12 > end) return 0;
+    p += 10;
+    const n = Math.max(0, Math.min(64, u16le(u8, p))); p += 2;
+    if (n > 2) p += n * 4;
+    p += n * 4;
+  }
+  if (type & 2) { if (p + 6 > end) return 0; return u16le(u8, p + 4); }
+  return 0;
+}
+
+function hwpAnalyze(u8) {
+  const cf = cfbRead(u8);
+  const fhIdx = cf.find('FileHeader');
+  if (fhIdx < 0) throw cfbNotHwp(cf);
+  const fh = cf.read(fhIdx);
+  if (!fh || fh.length < 40 || TD8.decode(fh.subarray(0, 17)) !== 'HWP Document File') throw cfbNotHwp(cf);
+  const ver = u32le(fh, 32), flags = u32le(fh, 36);
+  if (flags & 2) throw DCErr('문서 열기 암호가 걸린 한글 파일입니다. 한글에서 암호를 푼 뒤 넣어 주세요.', 'PASSWORD');
+  if (flags & 4) throw DCErr('배포용 문서(읽기 전용으로 잠근 한글 파일)는 줄일 수 없습니다.', 'DIST');
+  if (flags & (16 | 256 | 1024)) throw DCErr('보안(DRM·인증서 암호화)이 걸린 한글 파일은 줄일 수 없습니다.', 'DRM');
+  const A = { kind: 'hwp', cf, flags, compressed: !!(flags & 1), signed: !!(flags & 128), history: !!(flags & 64),
+    version: [ver >>> 24, (ver >>> 16) & 255, (ver >>> 8) & 255, ver & 255].join('.') };
+  const z = raw => {
+    if (!A.compressed) return { out: raw, ok: true };
+    return inflateRaw(raw, raw.length * 4);
+  };
+  /* DocInfo — 그림 목록(BIN_DATA)과 채우기(BORDER_FILL) */
+  A.diIdx = cf.find('DocInfo');
+  if (A.diIdx < 0) throw DCErr('한글 문서 정보(DocInfo)가 없습니다 — 손상된 파일입니다', 'CORRUPT');
+  const diRaw = cf.read(A.diIdx), di = z(diRaw);
+  A.di = di.out; A.diOk = di.ok;
+  const bins = new Map();       /* 그림 ID → 항목 */
+  const binList = [];
+  const unknownBins = new Set();
+  if (di.ok) {
+    let no = 0;
+    for (const rc of hwpRecs(A.di)) {
+      if (rc.tag === H5.BIN_DATA) {
+        no++;
+        const props = u16le(A.di, rc.off);
+        const kind = props & 15, comp = (props >> 4) & 3;
+        const b = { no, kind, comp, props, propsOff: rc.off, id: 0, ext: '', extOff: -1 };
+        if (kind === 1 || kind === 2) {
+          b.id = u16le(A.di, rc.off + 2);
+          if (kind === 1 && rc.off + 6 <= rc.end) {
+            const n = u16le(A.di, rc.off + 4);
+            b.extOff = rc.off + 6;
+            b.ext = TD16.decode(A.di.subarray(rc.off + 6, Math.min(rc.end, rc.off + 6 + n * 2)));
+          }
+        }
+        binList.push(b);
+        if (b.id) bins.set(b.id, b);
+      } else if (rc.tag === H5.BORDER_FILL) {
+        const p = rc.off + 2 + 6 * 4 + 6;          /* 속성 · 선 4개 · 대각선 뒤 채우기 */
+        const bid = fillBin5(A.di, p, rc.end);
+        if (bid) unknownBins.add(bid);
+      }
+    }
+  } else {
+    throw DCErr('한글 문서 정보(DocInfo)를 풀지 못했습니다 — 손상된 파일일 수 있습니다', 'CORRUPT');
+  }
+  /* 본문 — 그림 개체가 문서에서 차지하는 크기와 자르기 */
+  const uses = new Map();       /* 그림 ID → [{ w, h(인치), fw, fh, sec, cropOff, dimOff }] */
+  const addUse = (id, u) => { if (!uses.has(id)) uses.set(id, []); uses.get(id).push(u); };
+  A.sections = [];
+  for (let s = 0; ; s++) {
+    const idx = cf.find('BodyText/Section' + s);
+    if (idx < 0) break;
+    const raw = cf.read(idx), d = z(raw);
+    const sec = { idx, raw, data: d.out, ok: d.ok };
+    A.sections.push(sec);
+    if (!d.ok) { sec.unread = true; continue; }
+    const recs = hwpRecs(sec.data);
+    const u = sec.data;
+    const gso = [];               /* 열려 있는 그리기 개체(묶음 포함) */
+    const scs = [];               /* 열려 있는 개체 요소 */
+    for (let k = 0; k < recs.length; k++) {
+      const rc = recs[k];
+      while (gso.length && gso[gso.length - 1].lvl >= rc.lvl) gso.pop();
+      while (scs.length && scs[scs.length - 1].lvl >= rc.lvl) scs.pop();
+      if (rc.tag === H5.CTRL_HEADER && rc.end - rc.off >= 24 && ctrlIdAt(u, rc.off) === 'gso ') {
+        gso.push({ lvl: rc.lvl, w: u32le(u, rc.off + 16), h: u32le(u, rc.off + 20) });
+      } else if (rc.tag === H5.SHAPE_COMPONENT) {
+        /* 맨 위 요소는 개체 ID 가 두 번 들어 있다 */
+        let p = rc.off + 4;
+        if (rc.end - rc.off >= 8 && u32le(u, rc.off + 4) === u32le(u, rc.off)) p += 4;
+        const sid = ctrlIdAt(u, rc.off);
+        const sc = { lvl: rc.lvl, sid, ow: u32le(u, p + 12), oh: u32le(u, p + 16), cw: u32le(u, p + 20), ch: u32le(u, p + 24) };
+        scs.push(sc);
+        /* 사진이 아닌 도형의 그림 채우기 */
+        if (sid !== '$pic' && sid !== '$con' && sid !== '$ole') {
+          let q = p + 28 + 4 + 2 + 8;              /* 크기 뒤 · 뒤집기 · 회전 · 회전 중심 */
+          if (q + 2 <= rc.end) {
+            const nm = u16le(u, q); q += 2 + 48 + nm * 96;
+            if (q + 13 <= rc.end) {
+              q += 13;
+              const bid = fillBin5(u, q, rc.end);
+              if (bid) unknownBins.add(bid);
+            }
+          }
+        }
+      } else if (rc.tag === H5.SC_PICTURE && rc.end - rc.off >= 73) {
+        const bid = u16le(u, rc.off + 71);
+        /* 이 그림을 품은 가장 안쪽 그리기 개체의 폭·높이 — 묶음 안이면 묶음 전체 크기(넉넉한 쪽) */
+        const g = gso.length ? gso[gso.length - 1] : null;
+        if (!g || !(g.w > 0 && g.h > 0)) { unknownBins.add(bid); continue; }
+        let W = g.w, H = g.h;
+        const own = scs.length ? scs[scs.length - 1] : null;
+        const grouped = scs.filter(x => x.lvl > g.lvl).length > 1;
+        if (!grouped && own) { W = Math.max(W, own.cw || 0); H = Math.max(H, own.ch || 0); }
+        const crop = [i32le(u, rc.off + 44), i32le(u, rc.off + 48), i32le(u, rc.off + 52), i32le(u, rc.off + 56)];
+        let dim = [0, 0], dimOff = -1;
+        if (rc.end - rc.off >= 83) { dimOff = rc.end - 9; dim = [u32le(u, dimOff), u32le(u, dimOff + 4)]; }
+        addUse(bid, { w: W / 7200, h: H / 7200, sec: A.sections.length - 1, cropOff: rc.off + 44, dimOff, crop, dim });
+      } else if (rc.tag === H5.SC_OLE && rc.end - rc.off >= 14) {
+        const bid = u16le(u, rc.off + 12);
+        if (bins.has(bid)) bins.get(bid).ole = true;
+      }
+    }
+  }
+  if (!A.sections.length) throw DCErr('본문이 없는 한글 파일입니다', 'CORRUPT');
+  /* 그림 항목 만들기 */
+  A.images = [];
+  for (const b of binList) {
+    if (b.kind !== 1 || !b.id) continue;
+    const hex = b.id.toString(16).toUpperCase().padStart(4, '0');
+    let path = 'BinData/BIN' + hex + '.' + b.ext;
+    let idx = cf.find(path);
+    if (idx < 0) idx = cf.find('BinData/BIN' + b.id.toString(16).padStart(4, '0') + '.' + b.ext);
+    if (idx < 0) continue;
+    const e = cf.ents[idx];
+    const comp = b.comp === 1 || (b.comp === 0 && A.compressed);
+    const im = { key: 'bin' + b.id, name: e.name, bin: b, sidx: idx, stored: e.size, comp,
+      uses: uses.get(b.id) || [], unknown: unknownBins.has(b.id) || !uses.has(b.id) || A.sections.some(s => s.unread) };
+    im.data = () => {
+      const raw = cf.read(idx);
+      if (!comp) return raw;
+      const x = inflateRaw(raw, raw.length * 2);
+      if (!x.ok) throw DCErr('그림 자료를 풀지 못했습니다', 'CORRUPT');
+      return x.out;
+    };
+    im.allow = { jpeg: extFor('jpeg', b.ext) !== null, png: extFor('png', b.ext) !== null };
+    if (b.ole) im.skip = 'OLE 개체';
+    A.images.push(im);
+  }
+  A.other = [];
+  for (const [p, idx] of cf.paths) {
+    if (/^DocHistory\//i.test(p)) A.other.push({ what: 'history', size: cf.ents[idx].size });
+  }
+  return A;
+}
+function cfbNotHwp(cf) {
+  if (cf.find('EncryptedPackage') >= 0) return DCErr('열기 암호가 걸린 오피스 파일입니다. 암호를 푼 뒤 넣어 주세요.', 'PASSWORD');
+  if (cf.find('PowerPoint Document') >= 0) return DCErr('파워포인트 97-2003(.ppt) 형식입니다. 파워포인트에서 .pptx 로 다시 저장한 뒤 넣어 주세요.', 'OLDFMT');
+  if (cf.find('Workbook') >= 0 || cf.find('Book') >= 0) return DCErr('엑셀 97-2003(.xls) 형식입니다. 엑셀에서 .xlsx 로 다시 저장한 뒤 넣어 주세요.', 'OLDFMT');
+  if (cf.find('WordDocument') >= 0) return DCErr('워드 97-2003(.doc) 형식입니다. 워드에서 .docx 로 다시 저장한 뒤 넣어 주세요.', 'OLDFMT');
+  return DCErr('한글 파일이 아닙니다', 'FORMAT');
+}
+
+/* 줄인 그림들로 새 HWP 를 만든다. enc: Map(key → { bytes, fmt, w, h }) */
+async function hwpBuild(A, enc) {
+  const cf = A.cf;
+  const repl = new Map(), rename = new Map();
+  let di = null;
+  const secPatch = new Map();   /* 구역 번호 → 고친 사본 */
+  for (const im of A.images) {
+    const r = enc.get(im.key);
+    if (!r) continue;
+    const b = im.bin;
+    const newExt = extFor(r.fmt, b.ext);
+    if (newExt === null || (newExt !== b.ext && b.extOff < 0)) continue;
+    if (!di) di = A.di.slice();
+    /* 새 사진은 이미 압축된 형식이라 한글이 넣을 때처럼 「압축 안 함(2)」으로 적는다 */
+    put16(di, b.propsOff, (b.props & ~0x30) | 0x20);
+    if (newExt !== b.ext) {
+      for (let c = 0; c < newExt.length; c++) put16(di, b.extOff + c * 2, newExt.charCodeAt(c));
+      const nm = im.name.slice(0, im.name.length - b.ext.length) + newExt;
+      rename.set(im.sidx, nm);
+    }
+    repl.set(im.sidx, r.bytes);
+    /* 자르기·원본 크기는 원본 픽셀×75 단위 → 픽셀이 줄어든 비율만큼 같이 줄인다 */
+    if (r.w !== r.srcW || r.h !== r.srcH) {
+      const kx = r.w / r.srcW, ky = r.h / r.srcH;
+      for (const u of im.uses) {
+        const hasCrop = u.crop.some(v => v !== 0), hasDim = u.dimOff >= 0 && u.dim[0] > 0 && u.dim[1] > 0;
+        if (!hasCrop && !hasDim) continue;
+        const s = A.sections[u.sec];
+        if (!s || !s.ok) continue;
+        if (!secPatch.has(u.sec)) secPatch.set(u.sec, s.data.slice());
+        const d = secPatch.get(u.sec);
+        if (hasCrop) {
+          put32(d, u.cropOff, Math.round(u.crop[0] * kx)); put32(d, u.cropOff + 4, Math.round(u.crop[1] * ky));
+          put32(d, u.cropOff + 8, Math.round(u.crop[2] * kx)); put32(d, u.cropOff + 12, Math.round(u.crop[3] * ky));
+        }
+        if (hasDim) { put32(d, u.dimOff, Math.round(u.dim[0] * kx)); put32(d, u.dimOff + 4, Math.round(u.dim[1] * ky)); }
+      }
+    }
+  }
+  if (di) repl.set(A.diIdx, A.compressed ? await deflateRaw(di) : di);
+  for (const [si, d] of secPatch) repl.set(A.sections[si].idx, A.compressed ? await deflateRaw(d) : d);
+  return cfbWrite(cf, repl, rename);
+}
+/* 확장자 — 이름 길이가 같아야 디렉터리 트리 순서가 그대로다. 원래 대문자였으면 대문자로.
+   바꿀 수 없으면 null(그 형식으로는 굽지 않는다) */
+function extFor(fmt, old) {
+  const low = old.toLowerCase();
+  if (fmt === 'jpeg' && (low === 'jpg' || low === 'jpeg' || low === 'jpe')) return old;
+  if (fmt === 'png' && low === 'png') return old;
+  const cand = fmt === 'jpeg' ? (low.length === 4 ? 'jpeg' : 'jpg') : (low.length === 3 ? 'png' : null);
+  if (!cand || cand.length !== low.length) return null;
+  return old === old.toUpperCase() && /[A-Z]/.test(old) ? cand.toUpperCase() : cand;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   HWPX (한글 2014 이후 · 한글 2022 부터 기본 저장 형식) — ZIP 안의 XML
+   Contents/content.hpf 에 그림 목록(id·href·media-type), Contents/sectionN.xml 의
+   <hp:pic> 에 크기(hp:sz · HWPUNIT)·자르기(hp:imgClip)·원본 크기(hp:imgDim)가 있다.
+   ════════════════════════════════════════════════════════════════════ */
+function xAttrs(tag) {
+  const m = new Map();
+  const re = /([\w:.-]+)\s*=\s*"([^"]*)"/g;
+  let x;
+  while ((x = re.exec(tag))) m.set(x[1], x[2]);
+  return m;
+}
+function xEsc(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+function xUnesc(s) { return String(s).replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&'); }
+function xSetAttr(tag, name, val) {
+  const re = new RegExp('(\\s' + name.replace(/[.:]/g, '\\$&') + '\\s*=\\s*")[^"]*(")');
+  if (re.test(tag)) return tag.replace(re, (m, a, b) => a + xEsc(val) + b);
+  return tag.replace(/\s*(\/?>)$/, ' ' + name + '="' + xEsc(val) + '"$1');
+}
+
+function hwpxAnalyze(zr) {
+  const hpfName = zr.get('Contents/content.hpf') ? 'Contents/content.hpf' : null;
+  if (!hpfName) throw DCErr('한글(HWPX) 목록 파일이 없습니다 — 손상된 파일입니다', 'CORRUPT');
+  const hpf = zr.text(hpfName);
+  const A = { kind: 'hwpx', zr, hpfName, hpf, items: new Map(), images: [], parts: new Map() };
+  const itemRe = /<(?:opf:)?item\b[^>]*\/?>/g;
+  let m;
+  while ((m = itemRe.exec(hpf))) {
+    const a = xAttrs(m[0]);
+    const id = a.get('id'), href = a.get('href');
+    if (!id || !href) continue;
+    A.items.set(id, { id, href: xUnesc(href), type: a.get('media-type') || '', tag: m[0], at: m.index });
+  }
+  if (/\bsignature\b/i.test(zr.entries.map(e => e.name).join(' '))) A.signed = true;
+  /* 그림 쓰임새 — 본문·바탕쪽·머리 XML 전부 */
+  const uses = new Map(), unknown = new Set();
+  const addUse = (id, u) => { if (!uses.has(id)) uses.set(id, []); uses.get(id).push(u); };
+  for (const e of zr.entries) {
+    if (!/^Contents\/.+\.xml$/i.test(e.name)) continue;
+    const t = zr.text(e);
+    if (t.indexOf('binaryItemIDRef') < 0) continue;
+    A.parts.set(e.name, t);
+    /* 묶음 여닫는 자리를 한 번만 모아 두고, 그림 위치 앞에 몇 개가 열렸는지 센다 */
+    const opens = [], closes = [];
+    { const oc = /<hp:container\b|<\/hp:container>/g; let q; while ((q = oc.exec(t))) (q[0][1] === '/' ? closes : opens).push(q.index); }
+    const countBefore = (arr, at) => { let lo = 0, hi = arr.length; while (lo < hi) { const mid = (lo + hi) >> 1; if (arr[mid] < at) lo = mid + 1; else hi = mid; } return lo; };
+    const picRanges = [];
+    const picRe = /<hp:pic\b[\s\S]*?<\/hp:pic>/g;
+    let p;
+    while ((p = picRe.exec(t))) {
+      const s = p[0], st = p.index;
+      picRanges.push([st, st + s.length]);
+      const img = /<hc:img\b[^>]*>/.exec(s);
+      if (!img) continue;
+      const id = xUnesc(xAttrs(img[0]).get('binaryItemIDRef') || '');
+      if (!id) continue;
+      /* 묶음(hp:container) 안의 그림은 크기를 믿기 어려워 넉넉하게(모름)로 둔다 */
+      const openC = countBefore(opens, st), closeC = countBefore(closes, st);
+      const sz = /<hp:sz\b[^>]*>/.exec(s), cur = /<hp:curSz\b[^>]*>/.exec(s);
+      const sa = sz ? xAttrs(sz[0]) : new Map(), ca = cur ? xAttrs(cur[0]) : new Map();
+      const W = Math.max(+sa.get('width') || 0, +ca.get('width') || 0), H = Math.max(+sa.get('height') || 0, +ca.get('height') || 0);
+      if (openC > closeC || !(W > 0 && H > 0)) { unknown.add(id); continue; }
+      const clip = /<hp:imgClip\b[^>]*>/.exec(s), dim = /<hp:imgDim\b[^>]*>/.exec(s);
+      const u = { w: W / 7200, h: H / 7200, part: e.name, crop: [0, 0, 0, 0], dim: [0, 0] };
+      if (clip) { const c = xAttrs(clip[0]); u.crop = [+c.get('left') || 0, +c.get('top') || 0, +c.get('right') || 0, +c.get('bottom') || 0]; u.clipAt = st + clip.index; u.clipTag = clip[0]; }
+      if (dim) { const d = xAttrs(dim[0]); u.dim = [+d.get('dimwidth') || 0, +d.get('dimheight') || 0]; u.dimAt = st + dim.index; u.dimTag = dim[0]; }
+      addUse(id, u);
+    }
+    /* 그림(hp:pic) 밖에서 쓰인 그림 — 채우기·배경 등 → 크기 모름 */
+    const refRe = /binaryItemIDRef="([^"]*)"/g;
+    let r, pi = 0;
+    while ((r = refRe.exec(t))) {
+      const at = r.index;
+      while (pi < picRanges.length && picRanges[pi][1] <= at) pi++;
+      if (!(pi < picRanges.length && at >= picRanges[pi][0] && at < picRanges[pi][1])) unknown.add(xUnesc(r[1]));
+    }
+  }
+  for (const [id, it] of A.items) {
+    if (!/^image\//i.test(it.type) && !/^BinData\//i.test(it.href)) continue;
+    const e = zr.get(it.href);
+    if (!e) continue;
+    const im = { key: 'x:' + id, name: it.href.replace(/^.*\//, ''), id, entry: e, stored: e.csize,
+      uses: uses.get(id) || [], unknown: unknown.has(id) || !uses.has(id) };
+    im.data = () => zr.bytes(e);
+    const ext = (it.href.match(/\.([A-Za-z0-9]+)$/) || [, ''])[1];
+    im.ext = ext;
+    im.allow = { jpeg: true, png: true };
+    A.images.push(im);
+  }
+  return A;
+}
+
+async function hwpxBuild(A, enc) {
+  const zr = A.zr;
+  const renamed = new Map();       /* 옛 경로 → { path, type } */
+  const repl = new Map();          /* 항목 이름 → 새 바이트 */
+  const partEdits = new Map();     /* XML 이름 → [{ at, oldTag, newTag }] */
+  const names = new Set(zr.entries.map(e => e.name.toLowerCase()));
+  for (const im of A.images) {
+    const r = enc.get(im.key);
+    if (!r) continue;
+    const it = A.items.get(im.id);
+    let path = it.href;
+    const want = r.fmt === 'jpeg' ? 'jpg' : 'png';
+    const cur = (im.ext || '').toLowerCase();
+    const same = (r.fmt === 'jpeg' && (cur === 'jpg' || cur === 'jpeg')) || (r.fmt === 'png' && cur === 'png');
+    if (!same) {
+      const up = im.ext && im.ext === im.ext.toUpperCase() && /[A-Z]/.test(im.ext);
+      const base = it.href.replace(/\.[^./]+$/, '');
+      let cand = base + '.' + (up ? want.toUpperCase() : want), k = 1;
+      while (names.has(cand.toLowerCase())) cand = base + '_' + (k++) + '.' + (up ? want.toUpperCase() : want);
+      names.add(cand.toLowerCase());
+      renamed.set(it.href, { path: cand, type: r.fmt === 'jpeg' ? 'image/jpg' : 'image/png' });
+      path = cand;
+    }
+    repl.set(it.href, { path, bytes: r.bytes });
+    /* 자르기·원본 크기(원본 픽셀×75 단위)를 줄인 비율만큼 */
+    if (r.w !== r.srcW || r.h !== r.srcH) {
+      const kx = r.w / r.srcW, ky = r.h / r.srcH;
+      for (const u of im.uses) {
+        if (!partEdits.has(u.part)) partEdits.set(u.part, []);
+        const ed = partEdits.get(u.part);
+        if (u.clipTag && u.crop.some(v => v !== 0)) {
+          let t = u.clipTag;
+          t = xSetAttr(t, 'left', Math.round(u.crop[0] * kx)); t = xSetAttr(t, 'top', Math.round(u.crop[1] * ky));
+          t = xSetAttr(t, 'right', Math.round(u.crop[2] * kx)); t = xSetAttr(t, 'bottom', Math.round(u.crop[3] * ky));
+          ed.push({ at: u.clipAt, oldTag: u.clipTag, newTag: t });
+        }
+        if (u.dimTag && u.dim[0] > 0 && u.dim[1] > 0) {
+          let t = u.dimTag;
+          t = xSetAttr(t, 'dimwidth', Math.round(u.dim[0] * kx)); t = xSetAttr(t, 'dimheight', Math.round(u.dim[1] * ky));
+          ed.push({ at: u.dimAt, oldTag: u.dimTag, newTag: t });
+        }
+      }
+    }
+  }
+  /* content.hpf — 이름이 바뀐 그림의 href·media-type */
+  let hpf = A.hpf;
+  if (renamed.size) {
+    const edits = [];
+    for (const [, it] of A.items) {
+      const rn = renamed.get(it.href);
+      if (!rn) continue;
+      let t = xSetAttr(it.tag, 'href', rn.path);
+      t = xSetAttr(t, 'media-type', rn.type);
+      edits.push({ at: it.at, oldTag: it.tag, newTag: t });
+    }
+    hpf = applyEdits(hpf, edits);
+  }
+  const items = [];
+  for (const e of zr.entries) {
+    if (repl.has(e.name)) {
+      const r = repl.get(e.name);
+      items.push(await zipNew(e, r.path, r.bytes, false));
+    } else if (e.name === A.hpfName && hpf !== A.hpf) {
+      items.push(await zipNew(e, e.name, TE8.encode(hpf), true));
+    } else if (partEdits.has(e.name) && partEdits.get(e.name).length) {
+      const t = applyEdits(A.parts.get(e.name), partEdits.get(e.name));
+      items.push(await zipNew(e, e.name, TE8.encode(t), e.method !== 0));
+    } else items.push(zipKeep(zr, e));
+  }
+  return zipWrite(items);
+}
+/* 같은 자리의 태그만 바꾼다(뒤에서부터 — 앞의 위치가 밀리지 않게) */
+function applyEdits(text, edits) {
+  const es = edits.slice().sort((a, b) => b.at - a.at);
+  let t = text;
+  for (const ed of es) {
+    if (t.substr(ed.at, ed.oldTag.length) !== ed.oldTag) throw DCErr('문서 XML 을 고치는 중 위치가 어긋났습니다', 'INTERNAL');
+    t = t.slice(0, ed.at) + ed.newTag + t.slice(ed.at + ed.oldTag.length);
+  }
+  return t;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   오피스 새 형식(PPTX · XLSX · DOCX) — ZIP + XML + 관계(.rels)
+   사진은 ppt/media · xl/media · word/media 에 있고, 슬라이드·시트 그림·본문이
+   관계 ID(r:embed)로 가리킨다. 사진이 차지하는 크기는 그 도형의 a:xfrm/a:ext(EMU, 1인치=914400),
+   자르기는 a:srcRect(1/1000 %) — 비율이라 사진을 줄여도 고칠 필요가 없다.
+   형식이 바뀌면(PNG 사진 → JPEG) 파일 이름·관계 Target·[Content_Types].xml 을 함께 고친다.
+   ════════════════════════════════════════════════════════════════════ */
+const REL_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+
+function relsSourcePart(relsPath) {
+  const m = /^(.*?)_rels\/([^/]*)\.rels$/.exec(relsPath);
+  return m ? m[1] + m[2] : null;
+}
+function normPath(p) {
+  const out = [];
+  for (let seg of p.split('/')) {
+    try { seg = decodeURIComponent(seg); } catch (e) { /* 그대로 */ }
+    if (seg === '..') out.pop();
+    else if (seg && seg !== '.') out.push(seg);
+  }
+  return out.join('/');
+}
+function resolveTarget(src, target) {
+  if (!target || /^[a-z][a-z0-9+.-]*:/i.test(target)) return null;
+  const t = target.split('#')[0];
+  if (t.startsWith('/')) return normPath(t.slice(1));
+  const dir = src.lastIndexOf('/') >= 0 ? src.slice(0, src.lastIndexOf('/') + 1) : '';
+  return normPath(dir + t);
+}
+function kidEl(el, ln) { for (let c = el.firstElementChild; c; c = c.nextElementSibling) if (c.localName === ln) return c; return null; }
+function extOf(xfrm) {
+  const e = xfrm && kidEl(xfrm, 'ext');
+  if (!e) return null;
+  const cx = +e.getAttribute('cx'), cy = +e.getAttribute('cy');
+  return cx > 0 && cy > 0 ? { cx, cy } : null;
+}
+function boxHere(n) {
+  if (n.localName === 'spPr') return extOf(kidEl(n, 'xfrm'));
+  const sp = kidEl(n, 'spPr');
+  if (sp) { const e = extOf(kidEl(sp, 'xfrm')); if (e) return e; }
+  const x = kidEl(n, 'xfrm');
+  if (x) { const e = extOf(x); if (e) return e; }
+  if (n.localName === 'inline' || n.localName === 'anchor') {
+    const ex = kidEl(n, 'extent');
+    if (ex) { const cx = +ex.getAttribute('cx'), cy = +ex.getAttribute('cy'); if (cx > 0 && cy > 0) return { cx, cy }; }
+  }
+  return null;
+}
+function cssLenIn(st, prop) {
+  const m = new RegExp('(?:^|;)\\s*' + prop + '\\s*:\\s*([\\d.]+)\\s*(pt|in|cm|mm|px|pc)?', 'i').exec(st);
+  if (!m) return 0;
+  const v = parseFloat(m[1]), u = (m[2] || 'px').toLowerCase();
+  return u === 'pt' ? v / 72 : u === 'in' ? v : u === 'cm' ? v / 2.54 : u === 'mm' ? v / 25.4 : u === 'pc' ? v / 6 : v / 96;
+}
+/* 옛 VML 그림(v:imagedata) — 모양의 style 폭·높이와 자르기 비율 */
+function vmlBox(el) {
+  const shape = el.parentNode;
+  if (!shape || shape.nodeType !== 1 || (shape.parentNode && shape.parentNode.localName === 'group')) return null;
+  const st = shape.getAttribute('style') || '';
+  const w = cssLenIn(st, 'width'), h = cssLenIn(st, 'height');
+  if (!(w > 0 && h > 0)) return null;
+  const fr = k => { const v = el.getAttribute(k); if (!v) return 0; return /f$/i.test(v) ? parseFloat(v) / 65536 : (parseFloat(v) || 0); };
+  const cl = v => (v > 0 ? Math.min(4, Math.max(0.005, v)) : 0.005);
+  return { w, h, fw: cl(1 - fr('cropleft') - fr('cropright')), fh: cl(1 - fr('croptop') - fr('cropbottom')) };
+}
+/* 그림을 가리키는 요소(a:blip 등)에서 문서 속 크기(인치)와 보이는 비율을 구한다. 모르면 null */
+function ooxBox(el, sld) {
+  if (el.localName === 'imagedata') return vmlBox(el);
+  if (el.localName !== 'blip') return null;
+  const bf = el.parentNode;
+  if (!bf || bf.nodeType !== 1) return null;
+  if (kidEl(bf, 'tile')) return null;                       /* 바둑판 채우기는 크기를 알 수 없다 */
+  let fw = 1, fh = 1;
+  const sr = kidEl(bf, 'srcRect');
+  if (sr) {
+    const g = k => +(sr.getAttribute(k) || 0);
+    fw = 1 - (g('l') + g('r')) / 100000; fh = 1 - (g('t') + g('b')) / 100000;
+  }
+  let box = null, sx = 1, sy = 1;
+  for (let n = bf.parentNode; n && n.nodeType === 1; n = n.parentNode) {
+    const ln = n.localName;
+    if (!box) {
+      if (ln === 'bg' || ln === 'bgPr') { if (!sld) return null; box = { cx: sld.cx, cy: sld.cy }; continue; }
+      box = boxHere(n);
+      continue;
+    }
+    if (ln === 'grpSp' || ln === 'wgp') {                    /* 묶음이 늘이거나 줄인 만큼 */
+      const gp = kidEl(n, 'grpSpPr'), x = gp && kidEl(gp, 'xfrm');
+      if (x) {
+        const e = kidEl(x, 'ext'), ce = kidEl(x, 'chExt');
+        if (e && ce && +ce.getAttribute('cx') > 0 && +ce.getAttribute('cy') > 0) {
+          sx *= +e.getAttribute('cx') / +ce.getAttribute('cx');
+          sy *= +e.getAttribute('cy') / +ce.getAttribute('cy');
+        }
+      }
+    }
+  }
+  if (!box) return null;
+  /* 거의 다 잘라 낸 그림은 보이는 조각이 크게 늘어나 있으므로 줄이면 안 된다 — 비율을 아주 작게 둬서 필요한 해상도가 커지게 */
+  const cl = v => (v > 0 ? Math.min(4, Math.max(0.005, v)) : 0.005);
+  return { w: box.cx * sx / 914400, h: box.cy * sy / 914400, fw: cl(fw), fh: cl(fh) };
+}
+
+function ooxAnalyze(zr, kind) {
+  const A = { kind, zr, rels: [], media: new Map(), images: [], ctName: '[Content_Types].xml' };
+  A.ct = zr.text(A.ctName) || '';
+  if (kind === 'pptx') {
+    const pres = zr.text('ppt/presentation.xml') || '';
+    const m = /<p:sldSz\b[^>]*>/.exec(pres);
+    if (m) { const a = xAttrs(m[0]); A.sld = { cx: +a.get('cx') || 0, cy: +a.get('cy') || 0 }; }
+  }
+  A.signed = zr.entries.some(e => /^_xmlsignatures\//i.test(e.name));
+  for (const e of zr.entries) {
+    if (!/\.rels$/i.test(e.name)) continue;
+    const src = relsSourcePart(e.name);
+    if (src === null) continue;
+    const text = zr.text(e);
+    const list = [];
+    const re = /<(?:\w+:)?Relationship\b[^>]*>/g;
+    let m;
+    while ((m = re.exec(text))) {
+      const a = xAttrs(m[0]);
+      if ((a.get('TargetMode') || '').toLowerCase() === 'external') continue;
+      const raw = a.get('Target') || '';
+      const target = resolveTarget(src, xUnesc(raw));
+      if (!target) continue;
+      list.push({ id: a.get('Id'), type: a.get('Type') || '', raw, target, tag: m[0], at: m.index });
+    }
+    A.rels.push({ name: e.name, src, text, list });
+  }
+  for (const rf of A.rels) {
+    for (const r of rf.list) {
+      const ze = zr.get(r.target);
+      if (!ze) continue;
+      const isImg = /\/image$/i.test(r.type);
+      if (!isImg && !A.media.has(r.target) && !/\/media\//i.test(r.target)) continue;
+      if (!A.media.has(r.target)) A.media.set(r.target, { path: r.target, entry: ze, refs: [], uses: [], unknown: false, locked: false });
+      const md = A.media.get(r.target);
+      md.refs.push({ rf, r });
+      if (!isImg) md.locked = true;                         /* 동영상·효과 원본·OLE 등이 같이 쓰는 파일은 두고 간다 */
+    }
+  }
+  /* 쓰임새 — 사진을 가리키는 부분 XML 을 열어 요소마다 크기를 잰다 */
+  for (const rf of A.rels) {
+    const imgRels = rf.list.filter(r => /\/image$/i.test(r.type) && A.media.has(r.target));
+    if (!imgRels.length) continue;
+    const pe = zr.get(rf.src);
+    let doc = null;
+    if (pe && /\.(xml|vml)$/i.test(rf.src)) {
+      try {
+        doc = new DOMParser().parseFromString(zr.text(pe), 'application/xml');
+        if (doc.getElementsByTagName('parsererror').length) doc = null;
+      } catch (e) { doc = null; }
+    }
+    if (!doc) { for (const r of imgRels) A.media.get(r.target).unknown = true; continue; }
+    const byId = new Map(imgRels.map(r => [r.id, r]));
+    const found = new Set();
+    const all = doc.getElementsByTagName('*');
+    for (let i = 0; i < all.length; i++) {
+      const el = all[i];
+      if (!el.attributes.length) continue;
+      for (let k = 0; k < el.attributes.length; k++) {
+        const at = el.attributes[k];
+        const ln = at.localName;
+        if (!((at.namespaceURI === REL_NS && (ln === 'embed' || ln === 'id' || ln === 'link' || ln === 'pict')) || ln === 'relid')) continue;
+        const r = byId.get(at.value);
+        if (!r) continue;
+        found.add(r.id);
+        const md = A.media.get(r.target);
+        const box = ooxBox(el, A.sld);
+        if (box) md.uses.push(box); else md.unknown = true;
+      }
+    }
+    for (const r of imgRels) if (!found.has(r.id)) A.media.get(r.target).unknown = true;
+  }
+  for (const [path, md] of A.media) {
+    if (md.locked) continue;
+    if (!md.refs.some(x => /\/image$/i.test(x.r.type))) continue;
+    const im = { key: 'o:' + path, name: path.replace(/^.*\//, ''), path, entry: md.entry, stored: md.entry.csize,
+      uses: md.uses, unknown: md.unknown || !md.uses.length, allow: { jpeg: true, png: true } };
+    im.data = () => zr.bytes(md.entry);
+    A.images.push(im);
+  }
+  return A;
+}
+
+async function ooxBuild(A, enc) {
+  const zr = A.zr;
+  const names = new Set(zr.entries.map(e => e.name.toLowerCase()));
+  const repl = new Map(), moved = new Map(), exts = new Set();
+  for (const im of A.images) {
+    const r = enc.get(im.key);
+    if (!r) continue;
+    const cur = ((/\.([^./]+)$/.exec(im.path) || [])[1] || '').toLowerCase();
+    const same = (r.fmt === 'jpeg' && (cur === 'jpg' || cur === 'jpeg' || cur === 'jpe')) || (r.fmt === 'png' && cur === 'png');
+    let np = im.path;
+    if (!same) {
+      const ext = r.fmt === 'jpeg' ? 'jpeg' : 'png';
+      const base = im.path.replace(/\.[^./]+$/, '');
+      let cand = base + '.' + ext, k = 1;
+      while (names.has(cand.toLowerCase())) cand = base + '_' + (k++) + '.' + ext;
+      names.add(cand.toLowerCase());
+      np = cand; moved.set(im.path, np); exts.add(ext);
+    }
+    repl.set(im.path, { path: np, bytes: r.bytes });
+  }
+  A.lastMoved = moved;
+  /* 관계 Target 고치기 — 마지막 조각(파일 이름)만 바꾼다 */
+  const relsOut = new Map();
+  if (moved.size) {
+    for (const rf of A.rels) {
+      const edits = [];
+      for (const r of rf.list) {
+        const np = moved.get(r.target);
+        if (!np) continue;
+        const nb = np.slice(np.lastIndexOf('/') + 1);
+        const raw = xUnesc(r.raw);
+        const nt = raw.slice(0, raw.lastIndexOf('/') + 1) + nb;
+        edits.push({ at: r.at, oldTag: r.tag, newTag: xSetAttr(r.tag, 'Target', nt) });
+      }
+      if (edits.length) relsOut.set(rf.name, applyEdits(rf.text, edits));
+    }
+  }
+  /* [Content_Types].xml — 새 확장자 기본값, 이름이 바뀐 부분의 Override */
+  let ct = A.ct;
+  if (moved.size) {
+    for (const ext of exts) {
+      if (new RegExp('<Default\\b[^>]*Extension="' + ext + '"', 'i').test(ct)) continue;
+      const tag = '<Default Extension="' + ext + '" ContentType="' + (ext === 'png' ? 'image/png' : 'image/jpeg') + '"/>';
+      ct = ct.replace(/(<Types\b[^>]*>)/, '$1' + tag);
+    }
+    for (const [op, np] of moved) {
+      const re = new RegExp('<Override\\b[^>]*PartName="/' + op.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '"[^>]*>', 'i');
+      const m = re.exec(ct);
+      if (!m) continue;
+      let t = xSetAttr(m[0], 'PartName', '/' + np);
+      t = xSetAttr(t, 'ContentType', /\.png$/i.test(np) ? 'image/png' : 'image/jpeg');
+      ct = ct.slice(0, m.index) + t + ct.slice(m.index + m[0].length);
+    }
+  }
+  const items = [];
+  for (const e of zr.entries) {
+    if (repl.has(e.name)) { const r = repl.get(e.name); items.push(await zipNew(e, r.path, r.bytes, false)); }
+    else if (relsOut.has(e.name)) items.push(await zipNew(e, e.name, TE8.encode(relsOut.get(e.name)), true));
+    else if (e.name === A.ctName && ct !== A.ct) items.push(await zipNew(e, e.name, TE8.encode(ct), true));
+    else items.push(zipKeep(zr, e));
+  }
+  return zipWrite(items);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   실행 — 파일 알아보기 · 사진마다 줄일 크기 정하기 · 목표 용량 맞추기 · 결과 스스로 검사
+   ════════════════════════════════════════════════════════════════════ */
+const KIND_LABEL = { hwp: '한글(HWP)', hwpx: '한글(HWPX)', pptx: '파워포인트', xlsx: '엑셀', docx: '워드', ooxml: '오피스 문서' };
+
+function detectDoc(u8, name) {
+  if (u8.length >= 8 && isCFB(u8)) return hwpAnalyze(u8);
+  if (u8.length >= 4 && u8[0] === 0x50 && u8[1] === 0x4B && (u8[2] === 3 || u8[2] === 5)) {
+    const zr = zipRead(u8);
+    if (zr.get('Contents/content.hpf')) return hwpxAnalyze(zr);
+    if (zr.get('[Content_Types].xml')) {
+      if (zr.get('ppt/presentation.xml')) return ooxAnalyze(zr, 'pptx');
+      if (zr.get('xl/workbook.xml')) return ooxAnalyze(zr, 'xlsx');
+      if (zr.get('word/document.xml')) return ooxAnalyze(zr, 'docx');
+      return ooxAnalyze(zr, 'ooxml');
+    }
+    const mt = zr.get('mimetype');
+    if (mt && /opendocument/.test(zr.text(mt) || '')) throw DCErr('오픈오피스(ODF) 형식은 아직 지원하지 않습니다. 한글·워드·파워포인트·엑셀 형식으로 저장한 뒤 넣어 주세요.', 'UNSUPPORTED');
+    throw DCErr('한글·오피스 문서가 아닌 ZIP 파일입니다', 'FORMAT');
+  }
+  const head = TD8.decode(u8.subarray(0, Math.min(400, u8.length)));
+  if (/^%PDF/.test(head)) throw DCErr('PDF 파일입니다. PDF는 「PDF 용량 줄이기」 도구를 써 주세요.', 'PDF');
+  if (/<HWPML/i.test(head)) throw DCErr('한글 XML(HML) 파일입니다. 한글에서 .hwp 나 .hwpx 로 저장한 뒤 넣어 주세요.', 'UNSUPPORTED');
+  if (sniffImg(u8)) throw DCErr('사진 파일입니다. 사진 자체는 「사진 용량 줄이기」 도구를 써 주세요.', 'IMAGE');
+  throw DCErr('지원하지 않는 파일입니다 — 한글(hwp·hwpx)·파워포인트(pptx)·엑셀(xlsx)·워드(docx)만 됩니다', 'FORMAT');
+}
+
+/* 파일을 열어 사진 목록과 크기 정보를 채운다 */
+function openDoc(u8, name) {
+  const A = detectDoc(u8, name);
+  A.size = u8.length; A.name = name; A.u8 = u8;
+  for (const im of A.images) {
+    let d = null;
+    try { d = im.data(); } catch (e) { im.skip = '읽지 못함'; continue; }
+    im.info = imgInfo(d);
+    im.fmt = im.info.fmt;
+    const why = skipReason(im.info);
+    if (why && !im.skip) im.skip = why;
+  }
+  A.imgStored = A.images.reduce((a, im) => a + im.stored, 0);
+  A.notes = docNotes(A);
+  return A;
+}
+
+/* 사진 말고 용량을 차지하는 것 — 줄이지 않으니 알려만 준다 */
+function docNotes(A) {
+  const notes = [];
+  if (A.zr) {
+    let video = 0, emb = 0, font = 0, sheet = 0;
+    for (const e of A.zr.entries) {
+      const n = e.name.toLowerCase();
+      if (/\/media\/.*\.(mp4|m4v|mov|wmv|avi|mpg|mpeg|mkv|mp3|wav|m4a|wma|aac)$/.test(n)) video += e.csize;
+      else if (/\/embeddings\//.test(n)) emb += e.csize;
+      else if (/\/fonts\//.test(n)) font += e.csize;
+      else if (/^xl\/(worksheets\/.*\.xml|sharedstrings\.xml|pivotcache\/)/.test(n)) sheet += e.csize;
+    }
+    if (video > 262144) notes.push({ k: 'video', bytes: video });
+    if (emb > 262144) notes.push({ k: 'embed', bytes: emb });
+    if (font > 262144) notes.push({ k: 'font', bytes: font });
+    if (sheet > 1048576) notes.push({ k: 'sheet', bytes: sheet });
+  }
+  if (A.kind === 'hwp') {
+    const h = (A.other || []).reduce((a, x) => a + (x.what === 'history' ? x.size : 0), 0);
+    if (h > 262144) notes.push({ k: 'history', bytes: h });
+  }
+  if (A.signed) notes.push({ k: 'signed' });
+  return notes;
+}
+
+/* ── 화질 단계 ──
+   dpi: 문서에 보이는 크기 기준 해상도, q: JPEG 품질, cap: 크기를 모를 때 긴 변 상한(px) */
+const LADDER = [
+  { dpi: 300, q: 0.90, cap: 3200 },
+  { dpi: 220, q: 0.88, cap: 2400 },
+  { dpi: 190, q: 0.86, cap: 2200 },
+  { dpi: 170, q: 0.84, cap: 2000 },
+  { dpi: 150, q: 0.82, cap: 1800 },
+  { dpi: 130, q: 0.80, cap: 1600 },
+  { dpi: 110, q: 0.76, cap: 1400 },
+  { dpi: 96, q: 0.72, cap: 1280 },
+  { dpi: 84, q: 0.68, cap: 1120 },
+  { dpi: 72, q: 0.62, cap: 960 },
+  { dpi: 60, q: 0.55, cap: 800 }
+];
+const MODE_STEP = { light: 1, normal: 4, strong: 7 };
+
+/* HWP·HWPX 자르기(원본 픽셀×75 단위) → 보이는 비율 */
+function cropFrac(u, sw, sh) {
+  const c = u.crop || [0, 0, 0, 0], d = u.dim || [0, 0];
+  const W = d[0] > 0 ? d[0] : sw * 75, H = d[1] > 0 ? d[1] : sh * 75;
+  let fw = 1, fh = 1;
+  if (c[2] > c[0] && W > 0) fw = (c[2] - c[0]) / W;
+  if (c[3] > c[1] && H > 0) fh = (c[3] - c[1]) / H;
+  return [Math.min(1, Math.max(0.02, fw)), Math.min(1, Math.max(0.02, fh))];
+}
+function useFrac(u, info) {
+  if (u.fw != null) return [u.fw, u.fh];
+  return cropFrac(u, info.w, info.h);
+}
+/* 문서에서 가장 크게 보이는 곳 기준으로 필요한 픽셀 수 → 줄일 크기 */
+function planFor(im, L) {
+  const info = im.info, sw = info.w, sh = info.h;
+  const rot = info.orient >= 5;
+  let need = 0;
+  for (const u of im.uses) {
+    const [fw, fh] = useFrac(u, info);
+    const nw = (u.w / fw) * L.dpi, nh = (u.h / fh) * L.dpi;
+    let s = Math.max(nw / sw, nh / sh);
+    if (rot) s = Math.max(s, nw / sh, nh / sw);
+    need = Math.max(need, s);
+  }
+  if (im.unknown) need = Math.max(need, L.cap / Math.max(sw, sh));
+  let s = Math.min(1, need);
+  s = Math.max(s, Math.min(1, 160 / Math.max(sw, sh)));        /* 긴 변 160px 밑으로는 줄이지 않는다 */
+  const scaled = s < 0.93;
+  return { w: scaled ? Math.max(1, Math.round(sw * s)) : sw, h: scaled ? Math.max(1, Math.round(sh * s)) : sh, q: L.q, scaled };
+}
+/* 문서에서 가장 크게 보이는 크기(cm)와 그때의 해상도(dpi) — 목록에 보여 줄 것 */
+function showInfo(im) {
+  if (!im.info || !im.uses.length) return null;
+  let best = null;
+  for (const u of im.uses) {
+    const [fw, fh] = useFrac(u, im.info);
+    const a = u.w * u.h;
+    if (!best || a > best.a) best = { a, w: u.w, h: u.h, fw, fh };
+  }
+  const dpi = Math.round(Math.min(im.info.w * best.fw / best.w, im.info.h * best.fh / best.h));
+  return { wcm: best.w * 2.54, hcm: best.h * 2.54, dpi };
+}
+
+function concLimit() {
+  const iOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (iOS) return 2;
+  const m = navigator.deviceMemory || 4;
+  return m <= 2 ? 1 : (m <= 4 ? 2 : 3);
+}
+
+/* 한 단계로 사진을 전부 구워 본다(문서는 아직 안 만든다) */
+async function encodePass(A, step, opt, onProg, token) {
+  const L = LADDER[Math.max(0, Math.min(LADDER.length - 1, step))];
+  const enc = new Map();
+  const list = A.images.filter(im => !im.skip && im.info && im.info.w && im.info.h);
+  let next = 0, done = 0;
+  const one = async im => {
+    const plan = planFor(im, L);
+    const src = im.info.fmt;
+    const graphic = im.kindHint === 'graphic';
+    /* 줄일 필요가 없는 그림: JPEG 는 품질만 낮춰 보고, PNG·GIF 는 사진이면 JPEG 로,
+       그림이면 팔레트(256색 이하)로 바꿀 수 있을 때만 */
+    if (!plan.scaled && (src === 'png' || src === 'gif' || src === 'webp')) {
+      const canJpeg = opt.toJpeg && im.allow.jpeg && !graphic;
+      const canPal = im.allow.png && (opt.quant || !im.noExactFull);
+      if (!canJpeg && !canPal) return;
+    }
+    const d = im.data();
+    const want = { toJpeg: opt.toJpeg && im.allow.jpeg, quant: !!opt.quant, thumb: !!im.listed && !im.thumb };
+    let r;
+    try { r = await encodeImage(d, im.info, plan, want); } catch (e) { im.encErr = (e && e.message) || String(e); return; }
+    if (r.thumb) { if (!im.thumb) im.thumb = r.thumb; else URL.revokeObjectURL(r.thumb); }
+    im.kindHint = r.fmt === 'png' && src !== 'jpeg' ? 'graphic' : (src !== 'jpeg' ? 'photo' : im.kindHint);
+    if (!plan.scaled && r.exact === false) im.noExactFull = true;
+    if ((r.fmt === 'png' && !im.allow.png) || (r.fmt === 'jpeg' && !im.allow.jpeg)) return;
+    const newLen = r.bytes.length;
+    const gain = im.stored - newLen;
+    /* 1할 이상, 2KB 이상 줄 때만 바꾼다 — 거의 안 줄면 화질만 잃는다 */
+    if (gain > 2048 && newLen <= im.stored * 0.9) enc.set(im.key, { bytes: r.bytes, fmt: r.fmt, w: r.w, h: r.h, srcW: im.info.w, srcH: im.info.h, pal: r.pal });
+  };
+  const worker = async () => {
+    for (;;) {
+      const i = next++;
+      if (i >= list.length) return;
+      if (token && token.cancelled) throw DCErr('cancel', 'CANCEL');
+      await one(list[i]);
+      onProg && onProg(++done, list.length);
+      await sleep0();
+    }
+  };
+  await Promise.all(Array.from({ length: Math.max(1, Math.min(concLimit(), list.length)) }, worker));
+  if (token && token.cancelled) throw DCErr('cancel', 'CANCEL');
+  onProg && onProg(list.length, list.length);
+  return { enc, step, L };
+}
+function estSize(A, enc) {
+  let s = A.size;
+  for (const im of A.images) { const r = enc.get(im.key); if (r) s -= im.stored - r.bytes.length; }
+  return s;
+}
+async function buildDoc(A, enc) {
+  if (!enc.size) return A.u8;
+  if (A.kind === 'hwp') return hwpBuild(A, enc);
+  if (A.kind === 'hwpx') return hwpxBuild(A, enc);
+  return ooxBuild(A, enc);
+}
+/* 만든 파일을 다시 열어 본다 — 그릇이 온전한지, 바꾼 사진이 제자리에 들어갔는지 */
+function verifyOut(A, out, enc) {
+  const B = detectDoc(out, A.name);
+  if (B.kind !== A.kind) throw DCErr('검사 실패: 형식이 달라졌습니다', 'VERIFY');
+  if (B.images.length !== A.images.length) throw DCErr('검사 실패: 사진 수가 달라졌습니다', 'VERIFY');
+  const byKey = new Map(B.images.map(im => [im.key, im]));
+  const moved = A.lastMoved || new Map();
+  for (const im of A.images) {
+    const nk = im.path && moved.has(im.path) ? 'o:' + moved.get(im.path) : im.key;
+    const b = byKey.get(nk);
+    if (!b) throw DCErr('검사 실패: 사진을 찾지 못했습니다 ' + im.name, 'VERIFY');
+    const r = enc.get(im.key);
+    const d = b.data();
+    if (r) { if (!bytesEq(d, r.bytes)) throw DCErr('검사 실패: 바꾼 사진이 다릅니다 ' + im.name, 'VERIFY'); }
+    else if (d.length !== im.data().length) throw DCErr('검사 실패: 그대로 둔 사진이 달라졌습니다 ' + im.name, 'VERIFY');
+  }
+  if (A.kind === 'hwp') {
+    if (B.sections.length !== A.sections.length || B.sections.some(s => !s.ok)) throw DCErr('검사 실패: 본문을 다시 읽지 못했습니다', 'VERIFY');
+    for (let i = 0; i < A.sections.length; i++) if (B.sections[i].data.length !== A.sections[i].data.length) throw DCErr('검사 실패: 본문 길이가 달라졌습니다', 'VERIFY');
+    if (B.di.length !== A.di.length) throw DCErr('검사 실패: 문서 정보 길이가 달라졌습니다', 'VERIFY');
+  }
+  return true;
+}
+
+/* 목표 용량 — 한 번 구워 본 결과로 다음 단계를 예측한다(단계마다 사진 전부를 다시 굽기 때문에 이분 탐색보다 빠르다).
+   JPEG 용량 ≈ 픽셀 수 × 품질^1.4, 픽셀 수 ∝ dpi² */
+const wgtStep = s => LADDER[s].dpi * LADDER[s].dpi * Math.pow(LADDER[s].q, 1.4);
+async function fitTarget(A, target, opt, onProg, token) {
+  const tried = new Map();
+  const run = async s => {
+    if (tried.has(s)) return tried.get(s);
+    const p = await encodePass(A, s, opt, onProg, token);
+    p.est = estSize(A, p.enc);
+    let v = 0;
+    for (const im of A.images) { const r = p.enc.get(im.key); v += r ? r.bytes.length : (im.skip ? 0 : im.stored); }
+    p.varBytes = v;
+    tried.set(s, p);
+    return p;
+  };
+  let cur = await run(MODE_STEP.normal);
+  let best = cur.est <= target ? cur : null;
+  for (let it = 0; it < 4; it++) {
+    if (!cur.varBytes) break;
+    if (best && best.est >= target * 0.75) break;
+    const fixed = Math.max(0, cur.est - cur.varBytes);
+    const budget = target - fixed;
+    let nx;
+    if (budget <= 0) nx = LADDER.length - 1;
+    else {
+      const r = budget / cur.varBytes, w0 = wgtStep(cur.step);
+      nx = LADDER.length - 1;
+      for (let s = 0; s < LADDER.length; s++) if (wgtStep(s) / w0 <= r) { nx = s; break; }
+    }
+    if (best && nx >= best.step) nx = best.step - 1;
+    if (nx < 0 || nx > LADDER.length - 1 || tried.has(nx)) break;
+    cur = await run(nx);
+    if (cur.est <= target && (!best || cur.step < best.step)) best = cur;
+  }
+  if (best) return { p: best, miss: false };
+  const last = await run(LADDER.length - 1);
+  return { p: last, miss: last.est > target };
+}
+
+/* 한 파일 줄이기 — { bytes, enc, step, miss } */
+async function compressDoc(A, opt, onProg, token) {
+  let p, miss = false;
+  if (opt.mode === 'target') { const f = await fitTarget(A, opt.target, opt, onProg, token); p = f.p; miss = f.miss; }
+  else p = await encodePass(A, MODE_STEP[opt.mode] != null ? MODE_STEP[opt.mode] : 4, opt, onProg, token);
+  let bytes = await buildDoc(A, p.enc);
+  if (bytes !== A.u8) verifyOut(A, bytes, p.enc);
+  if (opt.mode === 'target' && bytes.length > opt.target && !miss && p.step < LADDER.length - 1) {
+    /* 추정과 실제가 조금 어긋나 넘친 경우 — 한 단계 더 */
+    const q = await encodePass(A, p.step + 1, opt, onProg, token);
+    const b2 = await buildDoc(A, q.enc);
+    if (b2 !== A.u8) verifyOut(A, b2, q.enc);
+    p = q; bytes = b2; miss = b2.length > opt.target;
+  }
+  return { bytes, enc: p.enc, step: p.step, miss };
+}
+
+/* ══════════════════════════════════════════════════════════════
+   화면 · 조작
+   설정을 바꾸면 곧바로 다시 줄여 결과 목록과 사진 목록을 갱신한다.
+   ══════════════════════════════════════════════════════════════ */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+let files = [];
+let uid = 0;
+let selId = 0;
+let runToken = null, buildTimer = null, lastSig = null, lastMs = 0;
+let loadingFiles = false, pvShown = false;
+let pending = false;      /* 설정을 바꿔 다시 줄이기를 기다리는 중 — 남은 결과는 옛 설정의 것 */
+let openPic = null;       /* 비교를 펼친 사진 key */
+let showAllPics = false;
+const PIC_FIRST = 12;
+
+let toastT;
+function toast(msg, ms) {
+  const t = $('#toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), ms || 2400);
+}
+function fmtSize(n) {
+  if (n === null || n === undefined) return '–';
+  if (n < 1024) return n + 'B';
+  if (n < 999.5 * 1024) return (n / 1024).toFixed(n < 10240 ? 1 : 0) + 'KB';
+  if (n < 999.5 * 1048576) return (n / 1048576).toFixed(n < 10485760 ? 2 : 1) + 'MB';
+  return (n / 1073741824).toFixed(2) + 'GB';
+}
+function pct(a, b) {
+  const c = b ? 1 - a / b : 0;
+  const v = Math.round(c * 100);
+  return (c >= 0 ? '−' : '+') + Math.min(99, Math.abs(v)) + '%';
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function fileExt(name) { const m = /\.([^.]+)$/.exec(name); return m ? m[1] : ''; }
+function outNameOf(f) {
+  const ext = fileExt(f.name) || (f.A ? f.A.kind : 'hwp');
+  let n = f.name.replace(/\.[^.]+$/, '').replace(/[\\/:*?"<>|]/g, '_');
+  return (n || 'document') + '_압축.' + ext;
+}
+const KIND_SHORT = { hwp: 'HWP', hwpx: 'HWPX', pptx: 'PPT', xlsx: 'XLS', docx: 'DOC', ooxml: 'OFC' };
+const MIME_OUT = {
+  hwp: 'application/x-hwp', hwpx: 'application/hwp+zip',
+  pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', ooxml: 'application/octet-stream'
+};
+const MODE_LABEL = { light: '약하게 · 220dpi', normal: '보통 · 150dpi', strong: '강하게 · 96dpi', target: '목표 용량' };
+
+/* ── 설정 읽기 ── */
+function curOpt() {
+  return {
+    mode: $('#segMode button.on').dataset.m,
+    target: Math.max(0.05, parseFloat($('#tgtVal').value) || 10) * 1048576,
+    toJpeg: $('#optJpeg').checked,
+    quant: $('#optQuant').checked
+  };
+}
+function sig() {
+  const o = curOpt();
+  return files.map(f => f.id).join(',') + '|' + o.mode + '|' + (o.mode === 'target' ? o.target : '') + '|' + (o.toJpeg ? 'J' : '') + (o.quant ? 'Q' : '');
+}
+
+/* ── 목록 그리기 ── */
+function render() {
+  $('#listCard').classList.toggle('hide', !files.length);
+  $('#cnt').textContent = files.length;
+  const nOk = files.filter(f => !f.err).length;
+  $('#addInfo').textContent = files.length ? ('문서 ' + files.length + '개' + (nOk < files.length ? ' · 못 읽음 ' + (files.length - nOk) : '')) : '';
+  const ul = $('#list');
+  ul.innerHTML = '';
+  for (const f of files) {
+    const li = document.createElement('li');
+    li.className = 'item' + (f.err ? ' bad' : '') + (f.id === selId ? ' sel' : '');
+    li.dataset.id = f.id;
+    let info;
+    if (f.err) info = '<span class="err">' + esc(f.err) + '</span>';
+    else if (f.out) {
+      const cls = f.out.length >= f.size * 0.995 ? 'cut up' : 'cut';
+      info = fmtSize(f.size) + ' → <b>' + fmtSize(f.out.length) + '</b> ' +
+        '<span class="' + cls + '">' + pct(f.out.length, f.size) + '</span>' +
+        '<span class="sub">' + esc(f.msg || '') + '</span>';
+    } else info = fmtSize(f.size) + ' · <span style="opacity:.7">' + (f.busy || '대기 중') + '</span>';
+    const kind = f.A ? f.A.kind : 'err';
+    const canDl = f.out && !pending && f.changed;
+    li.innerHTML =
+      '<div class="kdg ' + kind + '">' + (KIND_SHORT[kind] || '?') + '</div>' +
+      '<div class="meta"><div class="fname">' + esc(f.name) + '</div><div class="fsz">' + info + '</div></div>' +
+      '<div class="ctl">' +
+        '<button class="sq go" type="button" data-dl="' + f.id + '"' + (canDl ? '' : ' disabled') +
+          ' title="내려받기" aria-label="' + esc(outNameOf(f)) + ' 내려받기">⬇</button>' +
+        '<button class="sq x" type="button" data-x="' + f.id + '" title="빼기" aria-label="' + esc(f.name) + ' 빼기">✕</button>' +
+      '</div>';
+    ul.appendChild(li);
+  }
+  paintTotals();
+}
+function paintTotals() {
+  let src = 0, out = 0, done = 0, ch = 0;
+  const ok = files.filter(f => !f.err);
+  for (const f of ok) { src += f.size; if (f.out) { out += f.out.length; done++; if (f.changed) ch++; } }
+  $('#tSrc').textContent = src ? fmtSize(src) : '–';
+  const all = done && done === ok.length;
+  if (all) {
+    $('#tOut').textContent = fmtSize(out);
+    $('#tCut').textContent = pct(out, src);
+    $('#sumCut').textContent = fmtSize(src) + ' → ' + fmtSize(out);
+    $('#mbarTxt').textContent = '문서 ' + done + '개 · ' + fmtSize(src) + ' → ' + fmtSize(out);
+  } else {
+    $('#tOut').textContent = '–'; $('#tCut').textContent = '–'; $('#sumCut').textContent = '';
+    $('#mbarTxt').textContent = '줄인 문서';
+  }
+  const many = ok.filter(f => f.out && f.changed).length > 1;
+  $('#dlAll').classList.toggle('hide', !many);
+  $('#dlAll').disabled = !many || pending || !all;
+}
+
+/* ── 결과 카드 — 용량 구성 막대와 사진 목록 ── */
+function pvState(txt, busy) {
+  $('#pvState').textContent = txt || '';
+  $('#pvState').classList.toggle('busy', !!busy);
+}
+function pvEmpty(html) {
+  $('#pvBody').classList.add('hide');
+  $('#pvEmpty').classList.remove('hide');
+  $('#pvEmpty').innerHTML = html;
+  $('#dl').disabled = true;
+}
+function compRow(label, ph, rest, max, text) {
+  const w = v => Math.max(0, Math.min(100, v / max * 100)).toFixed(2) + '%';
+  return '<div class="crow"><span>' + label + '</span><span class="trk"><i class="ph" style="width:' + w(ph) + '"></i><i class="rs" style="width:' + w(rest) + '"></i></span><span class="v">' + text + '</span></div>';
+}
+function picLine(f, im) {
+  const r = f.res && f.res.enc.get(im.key);
+  const info = im.info || {};
+  const si = showInfo(im);
+  let p1, p2, tag;
+  if (r) {
+    p1 = '<span>' + fmtSize(im.stored) + ' → ' + fmtSize(r.bytes.length) + '</span><span class="tagk">' + pct(r.bytes.length, im.stored) + '</span>';
+    const scaled = r.w !== info.w || r.h !== info.h;
+    const dims = scaled ? info.w + '×' + info.h + ' → ' + r.w + '×' + r.h : info.w + '×' + info.h + ' 그대로';
+    const conv = r.fmt !== info.fmt ? ' · ' + (info.fmt || '').toUpperCase().replace('JPEG', 'JPG') + '→' + (r.fmt === 'jpeg' ? 'JPG' : 'PNG') : '';
+    const palTxt = r.pal === 'lossy' ? ' · 256색으로' : r.pal === 'exact' ? ' · 색 그대로 팔레트' : (!scaled && r.fmt === 'jpeg' ? ' · 품질만 낮춤' : '');
+    p2 = dims + conv + palTxt;
+    if (si) p2 += ' · 문서 속 ' + si.wcm.toFixed(1) + '×' + si.hcm.toFixed(1) + 'cm, ' + (scaled ? si.dpi + 'dpi→' + Math.round(si.dpi * r.w / info.w) + 'dpi' : si.dpi + 'dpi');
+  } else {
+    let why = im.skip || im.encErr;
+    if (!why) {
+      const q = curOpt().quant;
+      if (im.kindHint === 'graphic') why = q ? '캡처·도표 — 256색으로 줄이면 달라져서 그대로' : '캡처·도표 그림 — 원본 PNG가 더 작음';
+      else if (si && si.dpi <= (f.lastL ? f.lastL.dpi : 150) * 1.08) why = '이미 문서 크기에 맞음';
+      else why = '더 줄여도 크게 안 작아짐';
+    }
+    p1 = '<span>' + fmtSize(im.stored) + '</span><span class="tagk keep">그대로</span>';
+    p2 = (info.w ? info.w + '×' + info.h + ' · ' : '') + why + (si ? ' · 문서 속 ' + si.wcm.toFixed(1) + '×' + si.hcm.toFixed(1) + 'cm' : '');
+  }
+  tag = '<span class="nm">' + esc(im.name) + '</span>';
+  return { p1: p1 + tag, p2 };
+}
+function showPreview() {
+  const f = files.find(x => x.id === selId) || files.find(x => x.out) || files[0];
+  if (!f) {
+    $('#pvTitle').textContent = '줄인 문서가 여기에 나옵니다';
+    pvState('');
+    pvEmpty('<span class="big">📑</span>문서를 넣으면 무엇이 얼마나 줄었는지<br>여기에 바로 나옵니다.');
+    return;
+  }
+  selId = f.id;
+  $('#pvTitle').textContent = outNameOf(f);
+  if (f.err) { pvEmpty('<span class="big">⚠️</span><span class="err">' + esc(f.name) + '</span><br>' + esc(f.err)); return; }
+  if (!f.out) { pvEmpty('<span class="big">⏳</span>줄이는 중입니다…'); return; }
+  $('#pvEmpty').classList.add('hide');
+  $('#pvBody').classList.remove('hide');
+  const A = f.A;
+  const imgBefore = A.imgStored, rest = Math.max(0, f.size - imgBefore);
+  let imgAfter = 0;
+  for (const im of A.images) { const r = f.res.enc.get(im.key); imgAfter += r ? r.bytes.length : im.stored; }
+  const restAfter = Math.max(0, f.out.length - imgAfter);
+  const max = Math.max(f.size, f.out.length, 1);
+  $('#comp').innerHTML =
+    compRow('원본', imgBefore, rest, max, fmtSize(f.size)) +
+    compRow('줄인 뒤', imgAfter, restAfter, max, fmtSize(f.out.length)) +
+    '<div class="legend"><span>사진 ' + fmtSize(imgBefore) + ' → ' + fmtSize(imgAfter) + '</span><span class="r">나머지(글·표·서식 등) ' + fmtSize(rest) + ' 그대로</span></div>';
+  /* 사진 목록 — 큰 것부터 */
+  const pics = A.images.slice().sort((a, b) => b.stored - a.stored);
+  const nCh = pics.filter(im => f.res.enc.has(im.key)).length;
+  $('#plTitle').textContent = '문서 속 사진 ' + pics.length + '장';
+  $('#plSub').textContent = pics.length ? nCh + '장 줄임 · 큰 것부터' : '';
+  const ul = $('#pvList');
+  ul.innerHTML = '';
+  const shown = showAllPics ? pics.slice(0, 80) : pics.slice(0, PIC_FIRST);
+  if (!pics.length) ul.innerHTML = '<li class="pic" style="cursor:default"><div class="pm"><div class="p2">이 문서에는 사진이 없습니다. 용량 대부분이 글·표·서식이라 줄일 것이 없습니다.</div></div></li>';
+  for (const im of shown) {
+    const li = document.createElement('li');
+    li.className = 'pic' + (openPic === im.key ? ' open' : '');
+    li.dataset.k = im.key;
+    const L = picLine(f, im);
+    li.innerHTML = '<div class="th">' + (im.thumb ? '<img alt="" src="' + im.thumb + '">' : esc((im.fmt || '?').toUpperCase().replace('JPEG', 'JPG').slice(0, 4))) + '</div>' +
+      '<div class="pm"><div class="p1">' + L.p1 + '</div><div class="p2">' + L.p2 + '</div></div>';
+    ul.appendChild(li);
+    if (openPic === im.key) {
+      const box = document.createElement('li');
+      box.className = 'cmpbox';
+      box.innerHTML = '<div class="two"><figure><canvas></canvas><figcaption>원본</figcaption></figure><figure><canvas></canvas><figcaption>줄인 뒤</figcaption></figure></div><p class="cmpnote">가운데 부분을 불러오는 중…</p>';
+      ul.appendChild(box);
+      drawCompare(f, im, box);
+    }
+  }
+  $('#pvMore').classList.toggle('hide', pics.length <= PIC_FIRST);
+  $('#pvMore').textContent = showAllPics ? '사진 목록 접기' : '사진 ' + (pics.length - PIC_FIRST) + '장 더 보기';
+  /* 줄이지 않는 부분 안내 */
+  const notes = [];
+  for (const n of A.notes || []) {
+    if (n.k === 'video') notes.push('동영상·소리 <b>' + fmtSize(n.bytes) + '</b>는 그대로 두었습니다. 줄이려면 <a href="https://hwj-hub.github.io/video_compress/" target="_blank" rel="noopener">동영상 압축</a>으로 영상 자체를 줄여 다시 넣으세요.');
+    if (n.k === 'embed') notes.push('문서 안에 끼워 넣은 다른 파일(엑셀 표·PDF 등) <b>' + fmtSize(n.bytes) + '</b>는 그대로입니다.');
+    if (n.k === 'font') notes.push('문서에 글꼴이 <b>' + fmtSize(n.bytes) + '</b> 포함돼 있습니다. 파워포인트 [파일] → [옵션] → [저장]의 「파일의 글꼴 포함」을 끄고 저장하면 그만큼 줄어듭니다.');
+    if (n.k === 'sheet') notes.push('이 엑셀은 사진보다 <b>시트 데이터(' + fmtSize(n.bytes) + ')</b>가 큽니다. 쓰지 않는 아래쪽·오른쪽 행과 열을 선택해 <b>삭제</b>한 뒤 저장하면 빈칸까지 칠해진 서식이 사라져 줄어듭니다.');
+    if (n.k === 'history') notes.push('한글 <b>문서 이력</b>(이전 판 기록)이 ' + fmtSize(n.bytes) + ' 들어 있습니다. 한글에서 문서 이력을 지우고 저장하면 더 줄어듭니다.');
+    if (n.k === 'signed') notes.push('전자서명이 들어 있던 문서입니다. 파일이 바뀌면 <b>서명은 무효</b>가 됩니다.');
+  }
+  $('#pvNotes').classList.toggle('hide', !notes.length);
+  $('#pvNotes').innerHTML = notes.join('<br>');
+  $('#pvNote').innerHTML = f.changed
+    ? '<b>저장하면 이 결과 그대로</b> ' + esc(fileExt(f.name)) + ' 파일로 받습니다(' + fmtSize(f.size) + ' → ' + fmtSize(f.out.length) + '). 사진을 누르면 원본과 가운데 부분을 비교할 수 있습니다.'
+    : '줄일 사진이 없어 <b>원본과 같습니다</b>. 이 파일은 원본을 그대로 쓰세요.';
+  $('#dl').disabled = pending || !f.changed;
+  $('#dl').textContent = f.changed ? '⬇ 이 파일 내려받기' : '줄일 것이 없습니다';
+  lazyThumbs(f, shown);
+}
+/* 목록에 보이는 사진 중 작은 그림이 없는 것만 차례로 만든다 */
+let thumbJob = 0;
+async function lazyThumbs(f, shown) {
+  const my = ++thumbJob;
+  for (const im of shown) {
+    if (my !== thumbJob) return;
+    if (im.thumb || im.thumbFail || !im.info || !im.info.w || ['emf', 'wmf', 'svg', 'tiff', 'wdp', 'unknown'].indexOf(im.fmt) >= 0) continue;
+    try { im.thumb = await thumbOf(im.data(), im.info); } catch (e) { im.thumbFail = true; continue; }
+    const li = $('#pvList .pic[data-k="' + CSS.escape(im.key) + '"] .th');
+    if (li) li.innerHTML = '<img alt="" src="' + im.thumb + '">';
+  }
+}
+/* 원본과 줄인 사진의 가운데를 같은 크기로 — 줄인 사진을 화면 100% 로 본 모습 */
+async function drawCompare(f, im, box) {
+  const r = f.res.enc.get(im.key);
+  const cvs = box.querySelectorAll('canvas'), note = box.querySelector('.cmpnote');
+  if (!r) { note.textContent = '이 사진은 바꾸지 않았습니다 — 원본 그대로 들어갑니다.'; box.querySelector('.two').classList.add('hide'); return; }
+  try {
+    const info = im.info;
+    const rw = Math.min(r.w, 300), rh = Math.min(r.h, 220);
+    const nx = Math.max(0, Math.round((r.w - rw) / 2)), ny = Math.max(0, Math.round((r.h - rh) / 2));
+    const kx = info.w / r.w, ky = info.h / r.h;
+    const a = await createImageBitmap(new Blob([neutralOrient(im.data(), info)], { type: MIME[info.fmt] || '' }), Math.round(nx * kx), Math.round(ny * ky), Math.max(1, Math.round(rw * kx)), Math.max(1, Math.round(rh * ky)));
+    const nb = r.fmt === 'jpeg' ? neutralOrient(r.bytes, jpegInfo(r.bytes)) : r.bytes;
+    const b = await createImageBitmap(new Blob([nb], { type: r.fmt === 'png' ? 'image/png' : 'image/jpeg' }), nx, ny, rw, rh);
+    for (const [c, bm] of [[cvs[0], a], [cvs[1], b]]) {
+      c.width = rw; c.height = rh;
+      const cx = c.getContext('2d');
+      cx.imageSmoothingQuality = 'high';
+      cx.drawImage(bm, 0, 0, rw, rh);
+      bm.close();
+    }
+    note.textContent = '줄인 사진을 화면 100%로 본 가운데 부분입니다(원본은 같은 자리를 같은 크기로 줄여 보여 줌). 문서에서는 이보다 작게 보입니다.';
+  } catch (e) { note.textContent = '이 브라우저에서는 비교 그림을 그리지 못했습니다.'; }
+}
+
+/* ── 다시 줄이기 ── */
+function scheduleRun(force) {
+  if (!files.length) return;
+  const s = sig();
+  if (!force && s === lastSig) return;
+  lastSig = s;
+  clearTimeout(buildTimer);
+  pvState('다시 줄이는 중…', true);
+  /* 기다리는 동안 남아 있는 결과는 바꾸기 전 설정의 것 — 받지 못하게 잠근다 */
+  pending = true;
+  $('#dl').disabled = true; $('#dlAll').disabled = true;
+  $$('#list [data-dl]').forEach(b => { b.disabled = true; });
+  buildTimer = setTimeout(runAll, lastMs > 1500 ? 900 : 380);
+}
+async function runAll() {
+  if (runToken) runToken.cancelled = true;
+  const token = runToken = { cancelled: false };
+  pending = false;
+  const opt = curOpt();
+  const targets = files.filter(f => !f.err);
+  if (!targets.length) { showPreview(); pvState(''); return; }
+  const t0 = performance.now();
+  showProg(true, '줄이는 중…');
+  for (const f of targets) { f.out = null; f.res = null; f.msg = ''; f.busy = '대기 중'; f.changed = false; }
+  render();
+  let idx = 0;
+  for (const f of targets) {
+    if (token.cancelled) return;
+    idx++;
+    const head = targets.length > 1 ? '(' + idx + '/' + targets.length + ') ' : '';
+    const onProg = (i, n) => {
+      const base = (idx - 1) / targets.length, span = 1 / targets.length;
+      setProg(base + span * (n ? i / n : 1), head + f.name + ' — 사진 ' + i + '/' + n);
+    };
+    f.busy = '줄이는 중…'; render();
+    try {
+      const res = await compressDoc(f.A, opt, onProg, token);
+      if (token.cancelled) return;
+      f.res = res;
+      f.out = res.bytes;
+      f.changed = res.bytes !== f.A.u8 && res.bytes.length < f.size;
+      if (!f.changed) f.out = f.A.u8;
+      f.lastL = LADDER[res.step];
+      f.busy = '';
+      const imgs = f.A.images;
+      const parts = [];
+      if (!imgs.length) parts.push('사진이 없는 문서라 줄일 것이 없습니다');
+      else parts.push('사진 ' + imgs.length + '장 중 ' + res.enc.size + '장 줄임' + (imgs.length - res.enc.size ? ' · ' + (imgs.length - res.enc.size) + '장 그대로' : ''));
+      if (imgs.length && res.enc.size) parts.push((opt.mode === 'target' ? '찾은 단계 ' : '') + LADDER[res.step].dpi + 'dpi · 품질 ' + Math.round(LADDER[res.step].q * 100) + '%');
+      if (res.miss) parts.push('가장 강하게 줄여도 목표 아래로 못 갑니다');
+      else if (opt.mode === 'target' && f.changed) parts.push('목표 ' + fmtSize(opt.target) + ' 안에 들어감');
+      if (!f.changed && imgs.length) parts.push('원본을 그대로 쓰세요');
+      f.msg = parts.join(' · ');
+    } catch (e) {
+      if (token.cancelled || (e && e.code === 'CANCEL')) return;
+      f.err = '줄이는 중에 문제가 생겼습니다 — ' + ((e && e.message) || e);
+      f.out = null;
+    }
+    render();
+    if (f.id === selId) showPreview();
+  }
+  lastMs = performance.now() - t0;
+  showProg(false);
+  setProg(0, '');
+  pvState(MODE_LABEL[opt.mode] || '');
+  if (!selId || !files.some(f => f.id === selId)) selId = targets[0].id;
+  render();
+  showPreview();
+  paintWarn();
+  /* 처음 한 번만 결과로 데려간다. PC 는 결과가 옆 칸에 보이므로 움직이지 않는다 */
+  if (!pvShown && !loadingFiles) {
+    pvShown = true;
+    const r = $('#pvCard').getBoundingClientRect();
+    if (r.top > window.innerHeight * 0.55 || r.bottom < 60) {
+      try { $('#pvCard').scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) { $('#pvCard').scrollIntoView(); }
+    }
+  }
+  updateMbar();
+}
+function paintWarn() {
+  const w = $('#warnBox');
+  const msgs = [];
+  const total = files.reduce((a, f) => a + f.size, 0);
+  if (total > 150 * 1048576) msgs.push('넣은 파일이 합쳐서 ' + fmtSize(total) + '입니다. 휴대폰에서는 멈출 수 있으니 나눠서 처리하세요.');
+  const noGain = files.filter(f => !f.err && f.out && !f.changed);
+  if (noGain.length) msgs.push('<b>' + noGain.length + '개</b>는 줄일 사진이 없거나 이미 작게 들어 있어 원본과 같습니다.');
+  const missed = files.filter(f => !f.err && f.res && f.res.miss);
+  if (missed.length) msgs.push('<b>' + missed.length + '개</b>는 가장 강한 설정으로도 목표 용량에 못 들어갔습니다. 사진이 아닌 부분(글·표·동영상·글꼴 등)이 이미 목표보다 큽니다.');
+  w.classList.toggle('hide', !msgs.length);
+  w.innerHTML = msgs.join('<br>');
+}
+function showProg(on, txt) {
+  $('#prog').classList.toggle('show', !!on);
+  if (txt) $('#ptxt').textContent = txt;
+}
+function setProg(p, txt) {
+  $('#bar').style.width = Math.round(Math.max(0, Math.min(1, p)) * 100) + '%';
+  if (txt) $('#ptxt').textContent = txt;
+}
+
+/* ── 파일 추가 ── */
+const OK_EXT = /\.(hwp|hwpx|pptx|pptm|ppsx|potx|xlsx|xlsm|xltx|docx|docm|dotx)$/i;
+async function addFiles(fl) {
+  if (document.body.classList.contains('ia-lock')) return;   /* 막는 창이 떠 있으면 받지 않는다(inert 는 끌어 놓기를 못 막는다) */
+  const arr = Array.from(fl);
+  if (!arr.length) return;
+  loadingFiles = true;
+  showProg(true, '파일을 읽는 중…');
+  let bad = 0;
+  for (let i = 0; i < arr.length; i++) {
+    const file = arr[i];
+    setProg(i / arr.length, file.name + ' 읽는 중…');
+    await sleep0();
+    const rec = { id: ++uid, name: file.name, size: file.size, out: null, res: null, msg: '', busy: '', changed: false };
+    try {
+      if (!OK_EXT.test(file.name) && !/\.(ppt|xls|doc|pdf)$/i.test(file.name)) { /* 확장자가 달라도 속을 보고 판단 */ }
+      const u8 = new Uint8Array(await file.arrayBuffer());
+      rec.A = openDoc(u8, file.name);
+      rec.size = u8.length;
+      /* 목록에 먼저 보일 큰 사진만 작은 그림을 만든다 */
+      rec.A.images.slice().sort((a, b) => b.stored - a.stored).slice(0, PIC_FIRST).forEach(im => { im.listed = true; });
+    } catch (e) {
+      rec.err = (e && e.message) ? e.message : '읽을 수 없는 파일입니다';
+      bad++;
+    }
+    files.push(rec);
+    if (!selId) selId = rec.id;
+    render();
+  }
+  setProg(1, '');
+  showProg(false);
+  loadingFiles = false;
+  toast(bad ? arr.length + '개 중 ' + bad + '개를 읽지 못했어요' : arr.length + '개를 불러왔어요');
+  showPreview();
+  scheduleRun(true);
+}
+
+/* ════════════════════════════════════════════════════════════
+   앱 안 브라우저(네이버·카카오톡·라인 등) 대응
+   앱 안 화면은 OS 가 주는 WebView 라 내려받기 기능이 없다.
+   이 도구는 파일을 브라우저에서 만들어 blob: 으로 넘기는데, WebView 는 그걸 받지 못하고
+   아무 일도 일어나지 않고 끝난다(카카오 공식 안내: a[download] 는 안드로이드만,
+   iOS 는 data: 주소 방식). 서버가 없는 도구라 응답 헤더로 내려줄 수도 없다.
+     ① 앱 안에서 열리면 사용을 막는 창을 띄워 브라우저를 옮기게 한다
+     ② 그래도 저장을 누르면 blob: 대신 data: 주소로 시도한다(10MB 까지)
+     ③ 아이폰은 사파리를 강제로 열 수 없어 주소 복사 + 메뉴 안내로 간다
+   ════════════════════════════════════════════════════════════ */
+const UA = navigator.userAgent || '';
+const IA = {
+  naver: /NAVER\(inapp/i.test(UA),
+  naverBlog: /NAVER\(inapp;\s*blog/i.test(UA),
+  kakao: /KAKAOTALK/i.test(UA),
+  line: /\bLine\//i.test(UA),
+  ios: /iPhone|iPad|iPod/i.test(UA),
+  android: /Android/i.test(UA)
+};
+IA.on = IA.naver || IA.kakao || IA.line ||
+  /Instagram|FBAN|FBAV|FB_IAB|DaumApps|everytimeApp|band\/|KAKAOSTORY/i.test(UA) ||
+  (IA.android && /;\s*wv\)/i.test(UA));   /* 안드로이드 WebView 표시 */
+const IA_MAX = 10 * 1048576;               /* data: 주소는 base64 라 4/3 배로 커진다 — 그 이상은 막는다 */
+
+function externalUrl() {
+  const url = location.href;
+  if (IA.kakao) return 'kakaotalk://web/openExternal?url=' + encodeURIComponent(url);
+  if (IA.line) return url + (url.indexOf('?') >= 0 ? '&' : '?') + 'openExternalBrowser=1';
+  if (IA.android) return 'intent://' + url.replace(/^https?:\/\//i, '') +
+    '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
+  return '';
+}
+function copyAddr(guide) {
+  const url = location.href;
+  const done = () => toast(guide ? '주소를 복사했습니다. 사파리를 열고 붙여 넣거나, 메뉴에서 「다른 브라우저로 열기」를 누르세요.' : '주소를 복사했습니다.', 5200);
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(url).then(done, () => fallbackCopy(url, done)); return; }
+  } catch (e) { /* 아래로 */ }
+  fallbackCopy(url, done);
+}
+function fallbackCopy(text, done) {
+  const t = document.createElement('textarea');
+  t.value = text; t.setAttribute('readonly', ''); t.style.cssText = 'position:fixed;left:-9999px;top:0';
+  document.body.appendChild(t); t.select(); t.setSelectionRange(0, text.length);
+  try { document.execCommand('copy'); done(); } catch (e) { toast('주소를 길게 눌러 복사해 주세요.', 4200); }
+  t.remove();
+}
+/* 저장은 전부 이 한 곳을 거친다. 막혔으면 false */
+function download(blob, name) {
+  if (IA.on) return downloadInApp(blob, name);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name; a.rel = 'noopener';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+  return true;
+}
+function downloadInApp(blob, name) {
+  if (blob.size > IA_MAX) {
+    toast('앱 안에서는 10MB가 넘는 파일을 저장할 수 없습니다. 위쪽 「' + $('#iaGo').textContent + '」를 눌러 주세요.', 5600);
+    return false;
+  }
+  const go = href => {
+    const a = document.createElement('a');
+    a.href = href; a.download = name; a.rel = 'noopener';
+    document.body.appendChild(a); a.click(); a.remove();
+  };
+  const fr = new FileReader();
+  fr.onload = () => { try { go(fr.result); } catch (e) { /* 안내로 넘어간다 */ } };
+  fr.onerror = () => toast('앱 안에서는 저장이 막혀 있습니다. 위쪽 「' + $('#iaGo').textContent + '」를 눌러 주세요.', 5200);
+  fr.readAsDataURL(blob);
+  return true;
+}
+/* 줄인 문서 저장 — 목록의 ⬇ 와 결과 카드의 「내려받기」가 같이 쓴다 */
+function saveFile(f) {
+  if (!f || !f.out || pending) { toast('아직 줄이는 중이에요'); return; }
+  if (!f.changed) { toast('줄일 것이 없어 원본과 같습니다'); return; }
+  const blob = new Blob([f.out], { type: MIME_OUT[f.A.kind] || 'application/octet-stream' });
+  if (!download(blob, outNameOf(f))) return;
+  toast('저장했습니다 · ' + fmtSize(f.out.length) + ' (' + pct(f.out.length, f.size) + ')');
+  AD.done('줄인 문서를 저장했습니다 (' + fmtSize(f.size) + ' → ' + fmtSize(f.out.length) + '). 보내기 전에 이것만 확인하세요.');
+}
+/* 여러 개를 ZIP 하나로 — 이미 압축된 파일들이라 무압축으로 묶는다 */
+async function saveAll() {
+  const ok = files.filter(f => !f.err && f.out && f.changed);
+  if (!ok.length || pending) { toast('아직 줄이는 중이에요'); return; }
+  const used = new Set();
+  const items = ok.map(f => {
+    let nm = outNameOf(f), k = 2;
+    while (used.has(nm.toLowerCase())) nm = outNameOf(f).replace(/(\.[^.]+)$/, ' (' + (k++) + ')$1');
+    used.add(nm.toLowerCase());
+    const d = new Date();
+    return { name: nm, flags: 0x0800, method: 0, time: (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1),
+      date: ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate(), crc: crc32(f.out), usize: f.out.length, data: f.out };
+  });
+  let zipBytes;
+  try { zipBytes = zipWrite(items); } catch (e) { toast('ZIP으로 묶지 못했습니다 — 파일마다 ⬇ 로 받아 주세요'); return; }
+  const src = ok.reduce((a, f) => a + f.size, 0), out = ok.reduce((a, f) => a + f.out.length, 0);
+  if (!download(new Blob([zipBytes], { type: 'application/zip' }), '줄인_문서_' + ok.length + '개.zip')) return;
+  toast('ZIP으로 저장했습니다 · ' + ok.length + '개');
+  AD.done('줄인 문서 ' + ok.length + '개를 ZIP으로 저장했습니다 (' + fmtSize(src) + ' → ' + fmtSize(out) + '). 보내기 전에 이것만 확인하세요.');
+}
+
+/* ════════════════════════════════════════════════════════════
+   광고 — 한 화면에 4곳 (애드핏 운영정책: 한 페이지 4개 초과 게재 금지)
+     모바일  ① 맨 위 320×50   ③ 본문 320×100   ④ 저장 완료 카드 300×250   ⑤ 하단 오버형 320×50
+     PC      ① 맨 위 320×50   ② 결과 카드 위 320×50   ③ 본문 320×100   ④ 저장 완료 카드 300×250
+   지킨 것
+     · ins 를 자리마다 다 만든 뒤 ba.min.js 는 맨 끝에 딱 한 번 붙인다.
+       애드핏 로더는 자기가 뜰 때 있는 ins 만 읽어서, 뒤늦게 넣은 ins 는 빈 채로 남는다
+     · 입력 중에는 오버형을 내려 둔다(핵심 행동 중 광고 노출 금지)
+     · 저장 완료 광고는 창으로 덮지 않고 본문에 카드로 펼친다(콘텐츠를 가리는 배치 금지)
+     · 앱 안에서 막는 창이 떠 있으면 광고를 부르지 않는다 — 창 뒤 광고는 보는 사람 없이 노출만 잡힌다
+     · 다른 페이지가 iframe 으로 싣으면 광고를 부르지 않는다(애드핏: 아이프레임에서 광고 호출 금지)
+   ※ 단위 ID 는 애드핏에서 크기별로 따로 발급받아 아래 units 에만 적으면 된다.
+     같은 ID 를 한 화면에 같이 뜨는 두 자리에 쓰면 중복 노출이라 정책 위반이다.
+     DAN-XXXX… 로 남아 있는 자리는 점선 자리표시자만 그리고 요청은 보내지 않는다.
+   ════════════════════════════════════════════════════════════ */
+const AD = {
+  /* 애드핏 배너 크기는 160×600 · 250×250 · 300×250 · 320×100 · 320×50 · 728×90 뿐인데,
+     이 도구는 그중 휴대폰에서도 들어가는 320×50 · 320×100 · 300×250 만 쓴다 */
+  units: {
+    top:    { id: 'DAN-XXXXXXXXXXXXXXXX', w: 320, h: 50 },   /* 맨 위 · 모바일과 PC 크기가 같아 하나로 겸한다 */
+    /* PC 옆 칸과 모바일 하단 오버형은 한 화면에 같이 뜨지 않는다(폭 판정은 로드 때 한 번) —
+       같은 320×50 단위를 두 곳에 적어도 되고, 자리별 수익을 나눠 보려면 따로 발급한다 */
+    side:   { id: 'DAN-XXXXXXXXXXXXXXXX', w: 320, h: 50 },   /* PC 결과 카드 바로 위 */
+    mid:    { id: 'DAN-XXXXXXXXXXXXXXXX', w: 320, h: 100 },  /* 본문 · 모바일·PC 같은 자리라 하나로 쓴다 */
+    done:   { id: 'DAN-XXXXXXXXXXXXXXXX', w: 300, h: 250 },  /* 저장 완료 카드 · 모바일·PC 공통 */
+    anchor: { id: 'DAN-XXXXXXXXXXXXXXXX', w: 320, h: 50 }    /* 모바일 하단 오버형 (PC 에서는 안 뜬다) */
+  },
+  iframeOk: false,  /* iframe 안에서도 띄우려면 true (애드핏에서는 권하지 않음) */
+  popup: true,      /* 저장 완료 카드 */
+  overlay: true,    /* 하단 오버형 */
+  init() {
+    if (this.started) return;
+    this.started = true;
+    this.off = window.top !== window.self && !this.iframeOk;
+    this.pc = window.matchMedia('(min-width:980px)').matches;
+    if (this.off) { document.body.classList.add('no-ad'); return; }  /* 빈 자리가 남지 않게 접는다 */
+    this.put($('#ad-top'), 'top');
+    if (this.pc) this.put($('#ad-side'), 'side');
+    this.put($('#ad-mid'), 'mid');
+    /* 숨어 있는 자리(하단 오버형·저장 완료 카드)는 여기서 만들지 않는다.
+       화면에 나온 다음에 부른다 — 안 보이는 동안 부르면 보는 사람 없이 노출만 잡힌다 */
+    this.load();
+  },
+  put(box, key, preload) {
+    const u = this.units[key];
+    if (!box || !u || box.dataset.ad) return;
+    /* 창 크기가 바뀌어 자리가 늘어나도 한 페이지 4개를 넘기지 않는다(애드핏 SDK 도 4개까지만 받는다) */
+    if (document.querySelectorAll('ins.kakao_ad_area').length >= 4) return;
+    box.dataset.ad = key;
+    box.style.width = u.w + 'px';
+    if (/XXXX/.test(u.id)) { box.style.height = u.h + 'px'; box.innerHTML = '<div class="ad-ph">광고 ' + u.w + ' × ' + u.h + '</div>'; return; }
+    box.style.minHeight = u.h + 'px';
+    /* 광고가 안 내려오면 빈 칸이 남는다 — 공식 콜백으로 접는다. 단위가 여럿이면 이름이 서로 달라야 한다 */
+    const fail = 'adNone_' + box.id.replace(/-/g, '_');
+    window[fail] = () => {
+      box.classList.add('ad-none');
+      if (key === 'anchor') { this.closed = true; this.sync(true); }
+      if (key === 'done') { const d = $('#doneAd'); if (d) d.classList.add('ad-none'); }
+    };
+    const ins = document.createElement('ins');
+    ins.className = 'kakao_ad_area'; ins.style.display = 'none';
+    ins.setAttribute('data-ad-unit', u.id);
+    ins.setAttribute('data-ad-width', String(u.w));
+    ins.setAttribute('data-ad-height', String(u.h));
+    ins.setAttribute('data-ad-onfail', fail);
+    /* preload 를 켜면 애드핏이 「보이는 자리인가」 검사를 건너뛰고 0.7초마다 도는
+       preload 차례에 그려 넣는다 — 아직 숨어 있던 자리는 이 길로만 채울 수 있다 */
+    if (preload) ins.setAttribute('data-ad-preload', 'Y');
+    box.appendChild(ins);
+    this.need = true;
+  },
+  show(box, key) {
+    if (this.off || !this.started || !box || box.dataset.ad) return;
+    this.put(box, key, true);
+    this.load();
+    try {
+      const ins = box.querySelector('ins');
+      if (ins && window.adfit && typeof window.adfit.render === 'function') window.adfit.render(ins);
+    } catch (e) { /* 안 되면 0.7초 뒤 preload 차례가 채운다 */ }
+  },
+  load() {
+    if (!this.need || this.loaded) return;
+    this.loaded = true;
+    const s = document.createElement('script');
+    s.type = 'text/javascript'; s.async = true;
+    s.src = 'https://t1.kakaocdn.net/kas/static/ba.min.js';
+    document.body.appendChild(s);
+  },
+  onScreen(el) {
+    if (!el || el.classList.contains('hide')) return false;
+    const r = el.getBoundingClientRect();
+    return r.height > 0 && r.bottom > 0 && r.top < window.innerHeight;
+  },
+  /* 하단 오버형 — 읽는 구간(이럴 때 씁니다·자주 묻는 것·주의)에서만 올라온다.
+     넣기·설정·결과 목록·결과 카드·완료 카드 가운데 하나라도 화면에 보이거나, 줄이는 중이거나,
+     입력칸에 커서가 있으면 내린다(핵심 행동 중 광고 노출 금지) */
+  sync(barOn) {
+    if (this.off || this.pc || !this.overlay || !this.started) return;
+    const modal = document.body.classList.contains('ia-lock');
+    const ae = document.activeElement;
+    const typing = !!(ae && ae.closest && ae.closest('#form') &&
+      (/^(SELECT|TEXTAREA)$/.test(ae.tagName) || (ae.tagName === 'INPUT' && !/^(checkbox|radio|button|file)$/.test(ae.type))));
+    const working = this.onScreen($('#form')) || this.onScreen($('#pvCard')) || this.onScreen($('#doneCard')) || $('#prog').classList.contains('show');
+    const show = !this.closed && !barOn && !modal && !typing && !working && window.scrollY > 320;
+    if (show === this.shown) return;
+    this.shown = show;
+    /* 맨 아래에서 바가 올라오면 늘어난 여백만큼 다시 내려 마지막 줄이 바에 걸치지 않게 */
+    const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+    $('#anchor').classList.toggle('on', show);
+    document.body.classList.toggle('anch', show);
+    if (show) {
+      this.show($('#ad-anchor'), 'anchor');
+      if (atBottom) window.scrollTo(0, document.documentElement.scrollHeight);
+    }
+  },
+  /* 저장이 끝나면 결과 카드를 펼치고 그쪽을 보여 준다 — 창으로 덮지 않는다.
+     카드는 저장할 때마다 다시 펼치고, 광고 ins 는 첫 번째에 한 번만 만든다 */
+  done(msg) {
+    if (!this.popup) return;
+    $('#doneMsg').textContent = msg;
+    $('#doneCard').classList.remove('hide');
+    if (!this.off) this.show($('#ad-done'), 'done');
+    clearTimeout(this.goT);
+    this.goT = setTimeout(() => {
+      $('#doneCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      updateMbar();
+    }, 250);
+  },
+  hideDone() { $('#doneCard').classList.add('hide'); updateMbar(); }
+};
+
+/* 앱 안에서 열렸으면 사용을 막고 창을 띄운다.
+   띠만 띄워 두면 파일을 넣고 다 줄인 뒤에야 저장이 안 되는 걸 알게 되는데,
+   브라우저를 옮기는 순간 파일을 처음부터 다시 골라야 한다 */
+function initInApp() {
+  if (!IA.on) return;
+  const app = IA.naverBlog ? '네이버 블로그 앱' : IA.naver ? '네이버 앱' : IA.kakao ? '카카오톡' : IA.line ? '라인' : '앱';
+  const copyOnly = IA.ios && !IA.kakao && !IA.line;   /* 아이폰은 사파리를 강제로 열 수 없다 */
+  /* 카카오·라인은 앱의 자체 통로(kakaotalk:// · openExternalBrowser)로 기본 브라우저가 열린다.
+     크롬을 콕 집어 여는 것은 안드로이드 intent:// 뿐이라 단추 문구와 순서를 나눈다 */
+  const chromeIntent = IA.android && !IA.kakao && !IA.line;
+
+  document.body.classList.add('inapp');
+  $('#iaMsg').textContent = app + ' 안에서는 줄인 문서가 저장되지 않습니다.';
+  $('#doneInapp').classList.remove('hide');
+  $('#iaDesc').innerHTML = '<b>' + app + '</b> 안에서 열렸습니다. 이 화면에서는 ' +
+    '<b>줄인 한글·오피스 파일을 내려받을 수 없습니다.</b> 다 줄여도 받을 수 없으니 ' +
+    '<b>파일을 넣기 전에</b> 브라우저를 옮겨 주세요.';
+  const steps = copyOnly
+    ? ['아래 <b>주소 복사</b>를 누르세요.',
+       '화면의 <b>메뉴</b>에서 「다른 브라우저로 열기」를 누르거나, <b>사파리</b> 주소창에 붙여 넣으세요.']
+    : chromeIntent
+      ? ['아래 <b>크롬에서 열기</b>를 누르세요.',
+         '크롬이 없으면 오른쪽 위 <b>메뉴</b>에서 「다른 브라우저로 열기」를 누르세요.']
+      : ['아래 <b>다른 브라우저로 열기</b>를 누르세요.',
+         '열리지 않으면 ' + (IA.ios ? '화면의' : '오른쪽 위') + ' <b>메뉴</b>에서 「다른 브라우저로 열기」를 누르세요.'];
+  $('#iaSteps').innerHTML = steps.map(t => '<li>' + t + '</li>').join('');
+  const label = copyOnly ? '주소 복사' : chromeIntent ? '크롬에서 열기' : '다른 브라우저로 열기';
+  $('#iaGo').textContent = label;
+  $('#iaGo2').textContent = label;
+  $('#doneGo').textContent = label;
+  $('#iaSub').textContent = copyOnly
+    ? '사파리에 붙여 넣거나, 화면의 메뉴에서 「다른 브라우저로 열기」를 누르세요.'
+    : '파일을 넣기 전에 옮기면 다시 고르지 않아도 됩니다.';
+  /* 윗머리 띠를 ✕ 로 닫았으면 새로 고쳐도 띠는 다시 띄우지 않는다(막는 창은 열 때마다 뜬다) */
+  let hidden = false;
+  try { hidden = sessionStorage.getItem('doc_compress.iahide') === '1'; } catch (e) { /* 무시 */ }
+  if (hidden) document.body.classList.remove('inapp');
+  lockInApp(true);
+}
+function lockInApp(on) {
+  document.body.classList.toggle('ia-lock', on);
+  const w = document.querySelector('.wrap');
+  if (on) w.setAttribute('inert', ''); else w.removeAttribute('inert');
+  if (!on) $('#iaModal').blur();
+}
+function iaCopied() {
+  $('#iaDesc').innerHTML = '주소를 <b>복사했습니다.</b> 이제 <b>사파리</b>를 열고 주소창에 붙여 넣으세요.';
+  $('#iaSteps').innerHTML = '<li>홈 화면에서 <b>사파리</b>를 엽니다.</li>' +
+    '<li>주소창을 길게 눌러 <b>붙여넣기</b> 하세요.</li>' +
+    '<li>또는 이 화면의 <b>메뉴</b> → 「다른 브라우저로 열기」.</li>';
+}
+
+/* 휴대폰: 넣기·설정·목록을 보는 동안 결과 카드가 화면 아래에 있으면 아래 바를 띄운다 */
+function updateMbar() {
+  const has = files.some(f => f.out);
+  const r = $('#pvCard').getBoundingClientRect();
+  const on = has && $('#form').getBoundingClientRect().top < 0 && r.top > window.innerHeight;
+  $('#mbar').classList.toggle('on', on);
+  AD.sync(on);
+}
+
+/* ── 이벤트 ── */
+function dropThumbs(f) {
+  if (!f || !f.A) return;
+  for (const im of f.A.images) if (im.thumb) { try { URL.revokeObjectURL(im.thumb); } catch (e) { /* 무시 */ } im.thumb = null; }
+}
+function resetAll() {
+  if (runToken) runToken.cancelled = true;
+  clearTimeout(buildTimer);
+  for (const f of files) dropThumbs(f);
+  files = []; selId = 0; lastSig = null; pvShown = false; pending = false; openPic = null; showAllPics = false;
+  showProg(false); setProg(0, '');
+  $('#warnBox').classList.add('hide');
+  render();
+  showPreview();
+  pvState('');
+  AD.hideDone();
+}
+function init() {
+  const drop = $('#drop'), inp = $('#file');
+  drop.addEventListener('click', () => inp.click());
+  drop.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
+  inp.addEventListener('change', e => { addFiles(e.target.files); e.target.value = ''; });
+  $('#addMore').addEventListener('click', () => inp.click());
+  $('#clear').addEventListener('click', resetAll);
+
+  /* 화면 어디에 놓아도 받는다(막는 창이 떠 있으면 받지 않는다) */
+  const locked = () => document.body.classList.contains('ia-lock');
+  ['dragenter', 'dragover'].forEach(ev => document.addEventListener(ev, e => {
+    e.preventDefault(); if (!locked()) drop.classList.add('over');
+  }));
+  ['dragleave', 'drop'].forEach(ev => document.addEventListener(ev, e => {
+    e.preventDefault();
+    if (ev === 'drop' || e.relatedTarget === null) drop.classList.remove('over');
+  }));
+  document.addEventListener('drop', e => {
+    if (locked()) return;
+    if (e.dataTransfer && e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+  });
+
+  $('#list').addEventListener('click', e => {
+    const x = e.target.closest('[data-x]');
+    if (x) {
+      e.stopPropagation();
+      const id = +x.dataset.x;
+      dropThumbs(files.find(v => v.id === id));
+      files = files.filter(v => v.id !== id);
+      if (!files.length) { resetAll(); updateMbar(); return; }
+      if (selId === id) { selId = files[0].id; openPic = null; }
+      lastSig = sig();
+      render(); showPreview(); paintWarn(); updateMbar();
+      return;
+    }
+    const d = e.target.closest('[data-dl]');
+    if (d) { e.stopPropagation(); saveFile(files.find(v => v.id === +d.dataset.dl)); return; }
+    const li = e.target.closest('.item');
+    if (!li) return;
+    if (selId !== +li.dataset.id) { openPic = null; showAllPics = false; }
+    selId = +li.dataset.id;
+    render(); showPreview();
+    if (!window.matchMedia('(min-width:980px)').matches) {
+      try { $('#pvCard').scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (err) { $('#pvCard').scrollIntoView(); }
+    }
+  });
+  $('#pvList').addEventListener('click', e => {
+    const li = e.target.closest('.pic[data-k]');
+    if (!li) return;
+    openPic = openPic === li.dataset.k ? null : li.dataset.k;
+    showPreview();
+  });
+  $('#pvMore').addEventListener('click', () => { showAllPics = !showAllPics; showPreview(); });
+
+  $('#segMode').addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    $$('#segMode button').forEach(x => x.classList.toggle('on', x === b));
+    $('#tgtRow').classList.toggle('hide', b.dataset.m !== 'target');
+    $('#setHint').textContent = MODE_LABEL[b.dataset.m] || '';
+    scheduleRun();
+  });
+  $('#tgtChips').addEventListener('click', e => {
+    const b = e.target.closest('.chip');
+    if (!b) return;
+    $$('#tgtChips .chip').forEach(x => x.classList.toggle('on', x === b));
+    $('#tgtVal').value = b.dataset.t;
+    scheduleRun();
+  });
+  $('#tgtVal').addEventListener('input', () => {
+    const v = parseFloat($('#tgtVal').value);
+    $$('#tgtChips .chip').forEach(x => x.classList.toggle('on', parseFloat(x.dataset.t) === v));
+    scheduleRun();
+  });
+  $('#optJpeg').addEventListener('change', () => scheduleRun());
+  $('#optQuant').addEventListener('change', () => scheduleRun());
+
+  $('#dl').addEventListener('click', () => saveFile(files.find(x => x.id === selId)));
+  $('#dlAll').addEventListener('click', saveAll);
+  $('#doneHide').addEventListener('click', () => AD.hideDone());
+  $('#anchorX').addEventListener('click', () => { AD.closed = true; AD.sync(true); });
+
+  /* 앱 안 브라우저 — 막는 창·윗머리 띠·저장 완료 카드의 「다른 브라우저로 열기」 */
+  const goOut = () => { const u = externalUrl(); if (u) { location.href = u; return; } copyAddr(true); iaCopied(); };
+  $('#iaGo').addEventListener('click', goOut);
+  $('#iaGo2').addEventListener('click', goOut);
+  $('#doneGo').addEventListener('click', goOut);
+  /* 못 고치는 경우(앱 판별이 틀렸거나 그냥 보기만 할 때)를 위한 좁은 문 */
+  $('#iaStay').addEventListener('click', () => {
+    lockInApp(false);
+    AD.init();          /* 창이 떠 있는 동안 미뤄 둔 광고를 이제 부른다 */
+    updateMbar();
+    toast('저장은 안 됩니다. 줄인 문서를 받으려면 위쪽 「' + $('#iaGo').textContent + '」를 눌러 주세요.', 5200);
+  });
+  $('#iaX').addEventListener('click', () => {
+    document.body.classList.remove('inapp');
+    try { sessionStorage.setItem('doc_compress.iahide', '1'); } catch (e) { /* 무시 */ }
+  });
+
+  window.addEventListener('scroll', updateMbar, { passive: true });
+  window.addEventListener('resize', updateMbar, { passive: true });
+  $('#form').addEventListener('focusin', updateMbar);
+  $('#form').addEventListener('focusout', () => setTimeout(updateMbar, 0));
+  $('#mbarGo').addEventListener('click', () => $('#pvCard').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+
+  /* 브라우저가 갖춰야 할 것 */
+  const ok = typeof createImageBitmap !== 'undefined' && typeof Blob !== 'undefined' && !!Blob.prototype.arrayBuffer && typeof TextDecoder !== 'undefined';
+  if (!ok) {
+    drop.innerHTML = '<div class="big">⚠️</div><div class="t1">이 브라우저에서는 동작하지 않습니다</div>' +
+      '<div class="t2">사진을 다시 굽는 기능(createImageBitmap)이 없습니다. 크롬·사파리·엣지를 최신으로 올려 주세요.</div>';
+    drop.style.pointerEvents = 'none';
+  }
+
+  initInApp();
+  /* 앱 안에서 막는 창이 떠 있으면 광고는 창을 닫을 때 부른다 — 창 뒤에 깔린 광고는 보는 사람 없이 노출만 잡힌다 */
+  if (!document.body.classList.contains('ia-lock')) AD.init();
+  render();
+  showPreview();
+  updateMbar();
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+
+</script>
+</body>
+</html>
